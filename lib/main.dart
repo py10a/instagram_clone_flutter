@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram_clone_flutter/responsivnes/responsive_layout_screen.dart';
+import 'package:instagram_clone_flutter/screens/login_screen.dart';
 
 import 'firebase_options.dart';
 
@@ -21,7 +21,7 @@ class InstagramClone extends StatelessWidget {
     return MaterialApp(
       title: 'Instagram Clone',
       theme: ThemeData.dark(),
-      home: const ResponsiveLayoutScreen(),
+      home: const LoginScreen(),
     );
   }
 }
