@@ -7,6 +7,7 @@ class TextFieldInput extends StatefulWidget {
     this.isPassword = false,
     this.keyboardType = TextInputType.text,
     this.icon,
+    this.prefixIcon,
     required this.controller,
   });
 
@@ -15,6 +16,7 @@ class TextFieldInput extends StatefulWidget {
   final TextInputType keyboardType;
   final String hintText;
   final IconData? icon;
+  final Widget? prefixIcon;
 
   @override
   State<TextFieldInput> createState() => _TextFieldInputState();
@@ -31,18 +33,15 @@ class _TextFieldInputState extends State<TextFieldInput> {
 
   @override
   Widget build(BuildContext context) {
-    final decoration = InputDecoration(
+    final decoration = const InputDecoration().copyWith(
       hintText: widget.hintText,
-      hintStyle: TextStyle(color: Colors.grey[400]),
-      border: const OutlineInputBorder(borderSide: BorderSide()),
-      filled: true,
-      fillColor: Colors.grey[800],
+      prefixIcon: widget.prefixIcon,
       suffixIcon: widget.isPassword
           ? IconButton(
               icon: const Icon(Icons.remove_red_eye),
               onPressed: showPassword,
               color: isObscure
-                  ? Colors.grey[400]
+                  ? Theme.of(context).iconTheme.color
                   : Theme.of(context).iconTheme.color,
             )
           : null,

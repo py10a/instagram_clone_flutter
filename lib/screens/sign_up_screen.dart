@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:instagram_clone_flutter/widgets/text_field_input.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _SignUpScreenState createState() => _SignUpScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -22,17 +24,24 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var brightness = MediaQuery.of(context).platformBrightness;
-    final Color color =
-        brightness == Brightness.dark ? Colors.white : Colors.black;
-
     // Logo
     SvgPicture logo = SvgPicture.asset(
       'assets/images/instagram_logo.svg',
-      color: color,
+      color: Colors.white,
       width: 200,
     );
     // Inputs
+    TextFieldInput usernameTextInput = TextFieldInput(
+      controller: _usernameController,
+      hintText: 'Enter your username',
+      keyboardType: TextInputType.name,
+      prefixIcon: const Text('@'),
+    );
+    TextFieldInput nameTextInput = TextFieldInput(
+      controller: _nameController,
+      hintText: 'Enter your name and surname',
+      keyboardType: TextInputType.name,
+    );
     TextFieldInput emailTextInput = TextFieldInput(
       controller: _emailController,
       hintText: 'Enter your email',
@@ -45,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
       keyboardType: TextInputType.visiblePassword,
     );
     // Buttons
-    ButtonStyleButton loginButton = FilledButton(
+    ButtonStyleButton signUpButton = FilledButton(
       style: FilledButton.styleFrom(
         minimumSize: const Size(double.infinity, 48),
         shape: RoundedRectangleBorder(
@@ -55,9 +64,9 @@ class _LoginScreenState extends State<LoginScreen> {
       onPressed: () {
         FocusManager.instance.primaryFocus?.unfocus();
       },
-      child: const Text('Log in'),
+      child: const Text('Sign up'),
     );
-    ButtonStyleButton signUpButton = TextButton(
+    ButtonStyleButton loginButton = TextButton(
       style: FilledButton.styleFrom(
         minimumSize: const Size(double.infinity, 48),
         shape: RoundedRectangleBorder(
@@ -65,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
       onPressed: () {},
-      child: const Text('Sign up'),
+      child: const Text('Back to login'),
     );
 
     return Scaffold(
@@ -81,15 +90,19 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 logo,
                 const SizedBox(height: 32),
+                usernameTextInput,
+                const SizedBox(height: 8),
+                nameTextInput,
+                const SizedBox(height: 8),
                 emailTextInput,
                 const SizedBox(height: 8),
                 passwordTextInput,
                 const SizedBox(height: 64),
                 Column(
                   children: [
-                    loginButton,
-                    const SizedBox(height: 8),
                     signUpButton,
+                    const SizedBox(height: 8),
+                    loginButton,
                   ],
                 ),
               ],
