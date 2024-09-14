@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:instagram_clone_flutter/widgets/text_field_input.dart';
+import 'package:instagram_clone_flutter/screens/sign_up_screen.dart';
+import 'package:instagram_clone_flutter/widgets/email_text_field_input.dart';
+import 'package:instagram_clone_flutter/widgets/password_text_field_input.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -33,16 +35,11 @@ class _LoginScreenState extends State<LoginScreen> {
       width: 200,
     );
     // Inputs
-    TextFieldInput emailTextInput = TextFieldInput(
+    Widget emailTextInput = EmailTextFieldInput(
       controller: _emailController,
-      hintText: 'Enter your email',
-      keyboardType: TextInputType.emailAddress,
     );
-    TextFieldInput passwordTextInput = TextFieldInput(
+    Widget passwordTextInput = PasswordTextFieldInput(
       controller: _passwordController,
-      hintText: 'Enter your password',
-      isPassword: true,
-      keyboardType: TextInputType.visiblePassword,
     );
     // Buttons
     ButtonStyleButton loginButton = FilledButton(
@@ -64,7 +61,14 @@ class _LoginScreenState extends State<LoginScreen> {
           borderRadius: BorderRadius.circular(4),
         ),
       ),
-      onPressed: () {},
+      onPressed: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const SignUpScreen(),
+          ),
+        );
+      },
       child: const Text('Sign up'),
     );
 
@@ -82,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 logo,
                 const SizedBox(height: 32),
                 emailTextInput,
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
                 passwordTextInput,
                 const SizedBox(height: 64),
                 Column(

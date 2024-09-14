@@ -3,56 +3,47 @@ import 'package:flutter/material.dart';
 class TextFieldInput extends StatefulWidget {
   const TextFieldInput({
     super.key,
-    this.hintText = '',
-    this.isPassword = false,
-    this.keyboardType = TextInputType.text,
-    this.icon,
-    this.prefixIcon,
     required this.controller,
+    this.hintText = 'Enter text',
+    this.labelText,
+    this.keyboardType = TextInputType.text,
+    this.obscureText = false,
+    this.suffixIcon,
+    this.prefixIcon,
+    this.prefixText,
   });
 
   final TextEditingController controller;
-  final bool isPassword;
-  final TextInputType keyboardType;
   final String hintText;
-  final IconData? icon;
+  final String? labelText;
+  final TextInputType keyboardType;
+  final bool obscureText;
   final Widget? prefixIcon;
+  final String? prefixText;
+  final Widget? suffixIcon;
 
   @override
   State<TextFieldInput> createState() => _TextFieldInputState();
 }
 
 class _TextFieldInputState extends State<TextFieldInput> {
-  bool isObscure = true;
-
-  void showPassword() {
-    setState(() {
-      isObscure = !isObscure;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    final decoration = const InputDecoration().copyWith(
+    InputDecoration decoration = InputDecoration(
+      labelText: widget.labelText,
+      labelStyle: TextStyle(color: Colors.grey[900]),
       hintText: widget.hintText,
+      suffixIcon: widget.suffixIcon,
       prefixIcon: widget.prefixIcon,
-      suffixIcon: widget.isPassword
-          ? IconButton(
-              icon: const Icon(Icons.remove_red_eye),
-              onPressed: showPassword,
-              color: isObscure
-                  ? Theme.of(context).iconTheme.color
-                  : Theme.of(context).iconTheme.color,
-            )
-          : null,
+      prefixText: widget.prefixText,
     );
 
     return TextField(
       controller: widget.controller,
-      obscureText: isObscure,
-      keyboardType: widget.keyboardType,
-      autocorrect: !widget.isPassword,
       decoration: decoration,
+      keyboardType: widget.keyboardType,
+      obscureText: widget.obscureText,
+      autocorrect: false,
     );
   }
 }

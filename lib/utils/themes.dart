@@ -39,7 +39,7 @@ final lightTheme = ThemeData(
         width: 0.5,
       ),
     ),
-    hintStyle: TextStyle(color: Colors.grey[800]!),
+    hintStyle: TextStyle(color: Colors.grey[600]!),
     filled: true,
     fillColor: Colors.grey[100],
   ),

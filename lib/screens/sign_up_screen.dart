@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:instagram_clone_flutter/widgets/text_field_input.dart';
+import 'package:instagram_clone_flutter/screens/login_screen.dart';
+import 'package:instagram_clone_flutter/widgets/email_text_field_input.dart';
+import 'package:instagram_clone_flutter/widgets/name_text_field_input.dart';
+import 'package:instagram_clone_flutter/widgets/password_text_field_input.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -18,6 +21,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   void dispose() {
     super.dispose();
+    _usernameController.dispose();
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
   }
@@ -31,27 +36,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
       width: 200,
     );
     // Inputs
-    TextFieldInput usernameTextInput = TextFieldInput(
+    Widget usernameTextInput = NameTextFieldInput(
       controller: _usernameController,
-      hintText: 'Enter your username',
-      keyboardType: TextInputType.name,
-      prefixIcon: const Text('@'),
+      isUsername: true,
     );
-    TextFieldInput nameTextInput = TextFieldInput(
+    Widget nameTextInput = NameTextFieldInput(
       controller: _nameController,
-      hintText: 'Enter your name and surname',
-      keyboardType: TextInputType.name,
     );
-    TextFieldInput emailTextInput = TextFieldInput(
+    Widget emailTextInput = EmailTextFieldInput(
       controller: _emailController,
-      hintText: 'Enter your email',
-      keyboardType: TextInputType.emailAddress,
     );
-    TextFieldInput passwordTextInput = TextFieldInput(
+    Widget passwordTextInput = PasswordTextFieldInput(
       controller: _passwordController,
-      hintText: 'Enter your password',
-      isPassword: true,
-      keyboardType: TextInputType.visiblePassword,
     );
     // Buttons
     ButtonStyleButton signUpButton = FilledButton(
@@ -73,7 +69,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
           borderRadius: BorderRadius.circular(4),
         ),
       ),
-      onPressed: () {},
+      onPressed: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const LoginScreen(),
+          ),
+        );
+      },
       child: const Text('Back to login'),
     );
 
@@ -91,11 +94,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 logo,
                 const SizedBox(height: 32),
                 usernameTextInput,
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
                 nameTextInput,
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
                 emailTextInput,
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
                 passwordTextInput,
                 const SizedBox(height: 64),
                 Column(
