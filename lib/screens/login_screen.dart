@@ -24,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var brightness = MediaQuery.of(context).platformBrightness;
+    Brightness brightness = MediaQuery.of(context).platformBrightness;
     final Color color =
         brightness == Brightness.dark ? Colors.white : Colors.black;
 
@@ -88,13 +88,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 12),
                 passwordTextInput,
                 const SizedBox(height: 64),
-                Column(
-                  children: [
-                    loginButton,
-                    const SizedBox(height: 8),
-                    signUpButton,
-                  ],
-                ),
+                loginButton,
+                const SizedBox(height: 8),
+                signUpButton,
               ],
             ),
           ),

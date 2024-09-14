@@ -29,11 +29,47 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Brightness brightness = MediaQuery.of(context).platformBrightness;
+    final Color color =
+        brightness == Brightness.dark ? Colors.white : Colors.black;
+
     // Logo
     SvgPicture logo = SvgPicture.asset(
       'assets/images/instagram_logo.svg',
-      color: Colors.white,
-      width: 200,
+      color: color,
+      width: 100,
+    );
+    // Avatar
+    Widget avatar = InkWell(
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      onTap: () {},
+      child: Stack(
+        children: [
+          CircleAvatar(
+            radius: 40,
+            backgroundColor: Colors.grey[300],
+            child: Icon(
+              Icons.camera_alt,
+              size: 40,
+              color: Colors.grey[600],
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: CircleAvatar(
+              radius: 14,
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              child: Icon(
+                Icons.add,
+                size: 16,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
     // Inputs
     Widget usernameTextInput = NameTextFieldInput(
@@ -87,11 +123,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 logo,
-                const SizedBox(height: 32),
+                const SizedBox(height: 16),
+                avatar,
+                const SizedBox(height: 12),
                 usernameTextInput,
                 const SizedBox(height: 12),
                 nameTextInput,
@@ -100,13 +138,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(height: 12),
                 passwordTextInput,
                 const SizedBox(height: 64),
-                Column(
-                  children: [
-                    signUpButton,
-                    const SizedBox(height: 8),
-                    loginButton,
-                  ],
-                ),
+                signUpButton,
+                const SizedBox(height: 8),
+                loginButton,
               ],
             ),
           ),
