@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:instagram_clone_flutter/repository/auth/firebase_auth_methods.dart';
 import 'package:instagram_clone_flutter/screens/login_screen.dart';
+import 'package:instagram_clone_flutter/utils/utils.dart';
 import 'package:instagram_clone_flutter/widgets/email_text_field_input.dart';
 import 'package:instagram_clone_flutter/widgets/name_text_field_input.dart';
 import 'package:instagram_clone_flutter/widgets/password_text_field_input.dart';
@@ -17,6 +21,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  Uint8List? _avatarImage;
 
   @override
   void dispose() {
@@ -27,12 +32,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _passwordController.dispose();
   }
 
+  Future<void> selectImage() async {
+    _avatarImage = await pickImage(ImageSource.gallery);
+    setState(() {
+      _avatarImage = _avatarImage;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Brightness brightness = MediaQuery.of(context).platformBrightness;
     final Color color =
         brightness == Brightness.dark ? Colors.white : Colors.black;
-
     // Logo
     SvgPicture logo = SvgPicture.asset(
       'assets/images/instagram_logo.svg',
@@ -43,17 +54,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
     Widget avatar = InkWell(
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
-      onTap: () {},
+      onTap: () async {
+        await selectImage();
+      },
       child: Stack(
         children: [
           CircleAvatar(
             radius: 40,
-            backgroundColor: Colors.grey[300],
-            child: Icon(
-              Icons.camera_alt,
-              size: 40,
-              color: Colors.grey[600],
-            ),
+            foregroundImage: _avatarImage != null
+                ? MemoryImage(_avatarImage!)
+                : Image.asset('assets/images/default_avatar.png').image,
+            backgroundColor: Colors.transparent,
           ),
           Positioned(
             bottom: 0,
@@ -94,6 +105,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
       ),
       onPressed: () {
+        FirebaseAuthMethods().signUpWithEmailAndPassword(
+          email: _emailController.text,
+          username: _usernameController.text,
+          password: _passwordController.text,
+          image: _avatarImage!, // TODO: Add default image
+        );
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: const Text('Sign up'),
@@ -127,9 +144,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 logo,
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
                 avatar,
-                const SizedBox(height: 12),
+                const SizedBox(height: 32),
                 usernameTextInput,
                 const SizedBox(height: 12),
                 nameTextInput,
