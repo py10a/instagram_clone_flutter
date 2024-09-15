@@ -29,10 +29,13 @@ class _LoginScreenState extends State<LoginScreen> {
         brightness == Brightness.dark ? Colors.white : Colors.black;
 
     // Logo
-    SvgPicture logo = SvgPicture.asset(
-      'assets/images/instagram_logo.svg',
-      color: color,
-      width: 200,
+    Widget logo = Hero(
+      tag: 'logo',
+      child: SvgPicture.asset(
+        'assets/images/instagram_logo.svg',
+        color: color,
+        width: 200,
+      ),
     );
     // Inputs
     Widget emailTextInput = EmailTextFieldInput(
@@ -73,17 +76,20 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 logo,
-                const SizedBox(height: 32),
+                const SizedBox(height: 64),
                 emailTextInput,
                 const SizedBox(height: 12),
                 passwordTextInput,

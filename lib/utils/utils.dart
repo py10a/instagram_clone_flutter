@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 Future<Uint8List> pickImage(ImageSource source) async {
@@ -11,4 +12,24 @@ Future<Uint8List> pickImage(ImageSource source) async {
   } else {
     throw Exception('No image selected');
   }
+}
+
+void showSnackBar({
+  required BuildContext context,
+  required String text,
+  required bool isError,
+}) {
+  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      action: SnackBarAction(
+        label: 'Close',
+        onPressed: () {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        },
+      ),
+      content: Text(text),
+      backgroundColor: isError ? Colors.red : Colors.green,
+    ),
+  );
 }

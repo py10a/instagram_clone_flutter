@@ -11,26 +11,34 @@ class FirebaseAuthMethods implements AuthMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
-  Future signInWithEmailAndPassword({
+  Future<String> signInWithEmailAndPassword({
     required String email,
     required String password,
   }) async {
     try {
-      if (email.isNotEmpty || password.isNotEmpty) {
-        return await _auth.signInWithEmailAndPassword(
+      bool validated = email.isNotEmpty && password.isNotEmpty;
+      if (validated) {
+        await _auth.signInWithEmailAndPassword(
           email: email,
           password: password,
         );
+        return 'success';
       } else {
-        throw Exception('Please fill in all fields');
+        return 'Please fill in all fields';
       }
-    } catch (e) {
-      throw Exception('An error occurred: $e');
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'user-not-found':
+          return 'User not found';
+        case 'wrong-password':
+          return 'Wrong password';
+      }
     }
+    return 'none';
   }
 
   @override
-  Future signUpWithEmailAndPassword({
+  Future<String> signUpWithEmailAndPassword({
     required String email,
     required String username,
     required String password,
@@ -46,8 +54,8 @@ class FirebaseAuthMethods implements AuthMethods {
           email: email,
           password: password,
         );
-        Future<String> imageUrl = FirebaseStorageMethods().uploadFile(
-          path: 'images/avatars/${credentials.user!.uid}}',
+        String imageUrl = await FirebaseStorageMethods().uploadFile(
+          path: 'images/avatars/${credentials.user!.uid}',
           file: image,
         );
         await _firestore.collection('users').doc(credentials.user!.uid).set({
@@ -58,12 +66,19 @@ class FirebaseAuthMethods implements AuthMethods {
           'followers': [],
           'following': [],
         });
+        return 'success';
       } else {
-        throw Exception('Please fill in all fields');
+        return ('Please fill in all fields');
       }
-    } catch (e) {
-      throw Exception('An error occurred: $e');
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'email-already-in-use':
+          return 'Email already in use';
+        case 'weak-password':
+          return 'Password is too weak';
+      }
     }
+    return 'none';
   }
 
   @override

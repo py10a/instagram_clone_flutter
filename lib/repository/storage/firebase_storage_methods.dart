@@ -11,10 +11,10 @@ class FirebaseStorageMethods implements StorageMethods {
     required String path,
     required Uint8List file,
   }) async {
-    Reference ref = _storage.ref(path);
+    Reference ref = _storage.ref().child(path);
     UploadTask uploadTask = ref.putData(file);
     TaskSnapshot taskSnapshot = await uploadTask;
-    return taskSnapshot.ref.getDownloadURL();
+    return await taskSnapshot.ref.getDownloadURL();
   }
 
   @override
