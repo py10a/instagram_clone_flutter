@@ -29,10 +29,13 @@ class _LoginScreenState extends State<LoginScreen> {
         brightness == Brightness.dark ? Colors.white : Colors.black;
 
     // Logo
-    SvgPicture logo = SvgPicture.asset(
-      'assets/images/instagram_logo.svg',
-      color: color,
-      width: 200,
+    Widget logo = Hero(
+      tag: 'logo',
+      child: SvgPicture.asset(
+        'assets/images/instagram_logo.svg',
+        color: color,
+        width: 200,
+      ),
     );
     // Inputs
     Widget emailTextInput = EmailTextFieldInput(

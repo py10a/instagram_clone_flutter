@@ -18,16 +18,15 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   Uint8List? _avatarImage;
+  bool _isSigningUp = false;
 
   @override
   void dispose() {
     super.dispose();
     _usernameController.dispose();
-    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
   }
@@ -39,16 +38,42 @@ class _SignUpScreenState extends State<SignUpScreen> {
     });
   }
 
+  void signUp() async {
+    setState(() {
+      _isSigningUp = true;
+    });
+    String response = await FirebaseAuthMethods().signUpWithEmailAndPassword(
+      email: _emailController.text,
+      username: _usernameController.text,
+      password: _passwordController.text,
+      image: _avatarImage ?? Uint8List(0),
+    );
+    if (mounted) {
+      showSnackBar(
+        context: context,
+        text: response,
+        isError: response != 'success',
+      );
+    }
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() {
+      _isSigningUp = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Brightness brightness = MediaQuery.of(context).platformBrightness;
     final Color color =
         brightness == Brightness.dark ? Colors.white : Colors.black;
     // Logo
-    SvgPicture logo = SvgPicture.asset(
-      'assets/images/instagram_logo.svg',
-      color: color,
-      width: 100,
+    Widget logo = Hero(
+      tag: 'logo',
+      child: SvgPicture.asset(
+        'assets/images/instagram_logo.svg',
+        color: color,
+        width: 100,
+      ),
     );
     // Avatar
     Widget avatar = InkWell(
@@ -87,9 +112,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       controller: _usernameController,
       isUsername: true,
     );
-    Widget nameTextInput = NameTextFieldInput(
-      controller: _nameController,
-    );
     Widget emailTextInput = EmailTextFieldInput(
       controller: _emailController,
     );
@@ -104,16 +126,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
           borderRadius: BorderRadius.circular(4),
         ),
       ),
-      onPressed: () {
-        FirebaseAuthMethods().signUpWithEmailAndPassword(
-          email: _emailController.text,
-          username: _usernameController.text,
-          password: _passwordController.text,
-          image: _avatarImage!, // TODO: Add default image
-        );
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-      child: const Text('Sign up'),
+      onPressed: signUp,
+      child: _isSigningUp
+          ? CircularProgressIndicator(
+              strokeWidth: 2,
+              color: Theme.of(context).colorScheme.onPrimary,
+            )
+          : const Text('Sign up'),
     );
     ButtonStyleButton loginButton = TextButton(
       style: FilledButton.styleFrom(
@@ -148,8 +167,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 avatar,
                 const SizedBox(height: 32),
                 usernameTextInput,
-                const SizedBox(height: 12),
-                nameTextInput,
                 const SizedBox(height: 12),
                 emailTextInput,
                 const SizedBox(height: 12),
