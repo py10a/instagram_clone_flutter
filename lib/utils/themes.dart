@@ -13,6 +13,11 @@ const darkColorScheme = ColorScheme.dark(
 
 final lightTheme = ThemeData(
   colorScheme: lightColorScheme,
+  appBarTheme: const AppBarTheme(
+    iconTheme: IconThemeData(color: Colors.black),
+    actionsIconTheme: IconThemeData(color: Colors.black),
+    scrolledUnderElevation: 0,
+  ),
   buttonTheme: ButtonThemeData(
     buttonColor: lightColorScheme.primary,
     textTheme: ButtonTextTheme.primary,
@@ -42,6 +47,8 @@ final lightTheme = ThemeData(
     hintStyle: TextStyle(color: Colors.grey[500]!),
     filled: true,
     fillColor: Colors.grey[100],
+    labelStyle: TextStyle(color: Colors.grey[500]!),
+    floatingLabelStyle: TextStyle(color: Colors.grey[900]!),
   ),
 );
 

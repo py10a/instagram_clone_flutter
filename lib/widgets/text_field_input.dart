@@ -31,7 +31,6 @@ class _TextFieldInputState extends State<TextFieldInput> {
   Widget build(BuildContext context) {
     InputDecoration decoration = InputDecoration(
       labelText: widget.labelText,
-      labelStyle: TextStyle(color: Colors.grey[900]),
       hintText: widget.hintText,
       suffixIcon: widget.suffixIcon,
       prefixIcon: widget.prefixIcon,
