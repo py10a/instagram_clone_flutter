@@ -28,8 +28,8 @@ class FirebaseAuthMethods implements AuthMethods {
       }
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
-        case 'user-not-found':
-          return 'User not found';
+        case 'invalid-credential':
+          return 'Invalid login or password';
         case 'wrong-password':
           return 'Wrong password';
       }

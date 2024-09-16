@@ -21,25 +21,25 @@ final lightTheme = ThemeData(
     focusedBorder: OutlineInputBorder(
       borderSide: BorderSide(
         style: BorderStyle.solid,
-        color: Colors.grey[800]!,
+        color: Colors.grey[500]!,
         width: 0.5,
       ),
     ),
     enabledBorder: OutlineInputBorder(
       borderSide: BorderSide(
         style: BorderStyle.solid,
-        color: Colors.grey[800]!,
+        color: Colors.grey[500]!,
         width: 0.5,
       ),
     ),
     border: OutlineInputBorder(
       borderSide: BorderSide(
         style: BorderStyle.solid,
-        color: Colors.grey[800]!,
+        color: Colors.grey[500]!,
         width: 0.5,
       ),
     ),
-    hintStyle: TextStyle(color: Colors.grey[600]!),
+    hintStyle: TextStyle(color: Colors.grey[500]!),
     filled: true,
     fillColor: Colors.grey[100],
   ),

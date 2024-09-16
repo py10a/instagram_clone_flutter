@@ -153,6 +153,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
 
     return Scaffold(
+      appBar: AppBar(
+        title: logo,
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Padding(
@@ -162,7 +166,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                logo,
                 const SizedBox(height: 64),
                 avatar,
                 const SizedBox(height: 32),

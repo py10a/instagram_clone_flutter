@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:instagram_clone_flutter/repository/auth/firebase_auth_methods.dart';
 import 'package:instagram_clone_flutter/screens/sign_up_screen.dart';
 import 'package:instagram_clone_flutter/widgets/email_text_field_input.dart';
 import 'package:instagram_clone_flutter/widgets/password_text_field_input.dart';
+
+import '../utils/utils.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,12 +17,43 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
     super.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+  }
+
+  void logIn() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String res = await FirebaseAuthMethods().signInWithEmailAndPassword(
+      email: _emailController.text,
+      password: _passwordController.text,
+    );
+    FocusManager.instance.primaryFocus?.unfocus();
+    if (mounted) {
+      showSnackBar(
+        context: context,
+        text: res,
+        isError: res != 'success',
+      );
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  void signUp() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => const SignUpScreen(),
+      ),
+    );
   }
 
   @override
@@ -52,10 +86,13 @@ class _LoginScreenState extends State<LoginScreen> {
           borderRadius: BorderRadius.circular(4),
         ),
       ),
-      onPressed: () {
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-      child: const Text('Log in'),
+      onPressed: logIn,
+      child: _isLoading
+          ? CircularProgressIndicator(
+              strokeWidth: 2,
+              color: Theme.of(context).colorScheme.onPrimary,
+            )
+          : const Text('Log in'),
     );
     ButtonStyleButton signUpButton = TextButton(
       style: FilledButton.styleFrom(
@@ -64,14 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
           borderRadius: BorderRadius.circular(4),
         ),
       ),
-      onPressed: () {
-        FocusManager.instance.primaryFocus?.unfocus();
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const SignUpScreen(),
-          ),
-        );
-      },
+      onPressed: signUp,
       child: const Text('Sign up'),
     );
 
