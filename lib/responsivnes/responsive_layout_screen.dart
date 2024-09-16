@@ -6,23 +6,27 @@ import 'package:instagram_clone_flutter/responsivnes/web_layout_screen_scaffold.
 import '../utils/dimensions.dart';
 
 class ResponsiveLayoutScreen extends StatelessWidget {
-  final Widget webScreenLayout;
-  final Widget mobileScreenLayout;
+  final WebLayoutScreenScaffold webScreenLayout;
+  final MobileLayoutScreenScaffold mobileScreenLayout;
+  final DesktopLayoutScreenScaffold desktopScreenLayout;
+  final Widget child;
 
-  const ResponsiveLayoutScreen({
+  ResponsiveLayoutScreen({
     super.key,
-  })  : webScreenLayout = const WebLayoutScreenScaffold(),
-        mobileScreenLayout = const MobileLayoutScreenScaffold();
+    required this.child,
+  })  : webScreenLayout = WebLayoutScreenScaffold(child: child),
+        mobileScreenLayout = MobileLayoutScreenScaffold(child: child),
+        desktopScreenLayout = DesktopLayoutScreenScaffold(child: child);
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       if (constraints.maxWidth < mobileScreenWidth) {
-        return const MobileLayoutScreenScaffold();
+        return mobileScreenLayout;
       } else if (constraints.maxWidth < webScreenWidth) {
-        return const WebLayoutScreenScaffold();
+        return webScreenLayout;
       } else {
-        return const DesktopLayoutScreenScaffold();
+        return desktopScreenLayout;
       }
     });
   }
