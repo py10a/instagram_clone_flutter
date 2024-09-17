@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:instagram_clone_flutter/presentation/screens/sign_up_screen.dart';
+import 'package:instagram_clone_flutter/presentation/widgets/email_text_field_input.dart';
+import 'package:instagram_clone_flutter/presentation/widgets/password_text_field_input.dart';
 import 'package:instagram_clone_flutter/repository/auth/firebase_auth_methods.dart';
-import 'package:instagram_clone_flutter/screens/sign_up_screen.dart';
-import 'package:instagram_clone_flutter/widgets/email_text_field_input.dart';
-import 'package:instagram_clone_flutter/widgets/password_text_field_input.dart';
-
-import '../utils/utils.dart';
+import 'package:instagram_clone_flutter/utils/utils.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

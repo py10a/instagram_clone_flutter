@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:instagram_clone_flutter/presentation/widgets/email_text_field_input.dart';
+import 'package:instagram_clone_flutter/presentation/widgets/name_text_field_input.dart';
+import 'package:instagram_clone_flutter/presentation/widgets/password_text_field_input.dart';
 import 'package:instagram_clone_flutter/repository/auth/firebase_auth_methods.dart';
-import 'package:instagram_clone_flutter/screens/login_screen.dart';
 import 'package:instagram_clone_flutter/utils/utils.dart';
-import 'package:instagram_clone_flutter/widgets/email_text_field_input.dart';
-import 'package:instagram_clone_flutter/widgets/name_text_field_input.dart';
-import 'package:instagram_clone_flutter/widgets/password_text_field_input.dart';
+
+import 'home_screen.dart';
+import 'login_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -38,7 +40,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     });
   }
 
-  void signUp() async {
+  void signUp(context) async {
     setState(() {
       _isSigningUp = true;
     });
@@ -48,6 +50,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
       password: _passwordController.text,
       image: _avatarImage ?? Uint8List(0),
     );
+    if (response == 'success') {
+      _usernameController.clear();
+      _emailController.clear();
+      _passwordController.clear();
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const HomeScreen(),
+        ),
+      );
+    }
     if (mounted) {
       showSnackBar(
         context: context,
@@ -126,7 +138,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
           borderRadius: BorderRadius.circular(4),
         ),
       ),
-      onPressed: signUp,
+      onPressed: () {
+        signUp(context);
+      },
       child: _isSigningUp
           ? CircularProgressIndicator(
               strokeWidth: 2,
