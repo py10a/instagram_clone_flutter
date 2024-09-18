@@ -1,15 +1,14 @@
-import 'package:flutter/material.dart';
+import 'package:instagram_clone_flutter/responsivnes/base_layout_screen_scaffold.dart';
 
-class DesktopLayoutScreenScaffold extends StatelessWidget {
-  final Widget child;
-
+class DesktopLayoutScreenScaffold extends BaseLayoutScreenScaffold {
   const DesktopLayoutScreenScaffold({
     super.key,
-    required this.child,
+    required super.child,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return child;
-  }
+  _DesktopLayoutScreenScaffoldState createState() =>
+      _DesktopLayoutScreenScaffoldState();
 }
+
+class _DesktopLayoutScreenScaffoldState extends BaseLayoutScreenScaffoldState {}

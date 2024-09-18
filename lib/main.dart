@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone_flutter/presentation/screens/home_screen.dart';
 import 'package:instagram_clone_flutter/presentation/screens/login_screen.dart';
+import 'package:instagram_clone_flutter/responsivnes/responsive_layout_screen.dart';
 import 'package:instagram_clone_flutter/utils/themes.dart';
 
 import 'firebase_options.dart';
@@ -38,23 +39,31 @@ class InstagramClone extends StatelessWidget {
           }
           if (snapshot.connectionState == ConnectionState.active) {
             if (snapshot.hasData) {
-              return const HomeScreen();
+              return ResponsiveLayoutScreen(
+                child: const HomeScreen(),
+              );
             } else if (snapshot.hasError) {
-              return Scaffold(
-                body: Center(
-                  child: Text('Error: ${snapshot.error}'),
+              return ResponsiveLayoutScreen(
+                child: Scaffold(
+                  body: Center(
+                    child: Text('Error: ${snapshot.error}'),
+                  ),
                 ),
               );
             }
           }
           if (snapshot.connectionState == ConnectionState.done) {
-            return const Scaffold(
-              body: Center(
-                child: Text('Connection state done'),
+            return ResponsiveLayoutScreen(
+              child: const Scaffold(
+                body: Center(
+                  child: Text('Connection state done'),
+                ),
               ),
             );
           }
-          return const LoginScreen();
+          return ResponsiveLayoutScreen(
+            child: const LoginScreen(),
+          );
         },
       ),
     );

@@ -1,15 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:instagram_clone_flutter/responsivnes/base_layout_screen_scaffold.dart';
 
-class WebLayoutScreenScaffold extends StatelessWidget {
-  final Widget child;
-
+class WebLayoutScreenScaffold extends BaseLayoutScreenScaffold {
   const WebLayoutScreenScaffold({
     super.key,
-    required this.child,
+    required super.child,
   });
-
-  @override
-  Widget build(BuildContext context) {
-    return child;
-  }
 }
