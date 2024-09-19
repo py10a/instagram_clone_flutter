@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:instagram_clone_flutter/presentation/screens/sign_up_screen.dart';
-import 'package:instagram_clone_flutter/presentation/widgets/email_text_field_input.dart';
-import 'package:instagram_clone_flutter/presentation/widgets/password_text_field_input.dart';
+import 'package:instagram_clone_flutter/presentation/screens/screens.dart';
+import 'package:instagram_clone_flutter/presentation/widgets/widgets.dart';
 import 'package:instagram_clone_flutter/repository/auth/firebase_auth_methods.dart';
 import 'package:instagram_clone_flutter/utils/utils.dart';
 
@@ -78,30 +77,14 @@ class _LoginScreenState extends State<LoginScreen> {
       controller: _passwordController,
     );
     // Buttons
-    ButtonStyleButton loginButton = FilledButton(
-      style: FilledButton.styleFrom(
-        minimumSize: const Size(double.infinity, 48),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-        ),
-      ),
+    Widget loginButton = PrimaryButton(
+      text: const Text('Log in'),
       onPressed: logIn,
-      child: _isLoading
-          ? CircularProgressIndicator(
-              strokeWidth: 2,
-              color: Theme.of(context).colorScheme.onPrimary,
-            )
-          : const Text('Log in'),
+      isAsync: _isLoading,
     );
-    ButtonStyleButton signUpButton = TextButton(
-      style: FilledButton.styleFrom(
-        minimumSize: const Size(double.infinity, 48),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-        ),
-      ),
+    Widget signUpButton = SecondaryButton(
+      text: const Text('Sign up'),
       onPressed: signUp,
-      child: const Text('Sign up'),
     );
 
     return Scaffold(

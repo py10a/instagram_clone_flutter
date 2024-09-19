@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:instagram_clone_flutter/presentation/widgets/email_text_field_input.dart';
-import 'package:instagram_clone_flutter/presentation/widgets/name_text_field_input.dart';
-import 'package:instagram_clone_flutter/presentation/widgets/password_text_field_input.dart';
+import 'package:instagram_clone_flutter/presentation/screens/screens.dart';
+import 'package:instagram_clone_flutter/presentation/widgets/widgets.dart';
+import 'package:instagram_clone_flutter/providers/user_provider.dart';
 import 'package:instagram_clone_flutter/repository/auth/firebase_auth_methods.dart';
+import 'package:instagram_clone_flutter/responsivnes/responsive_layout_screen.dart';
 import 'package:instagram_clone_flutter/utils/utils.dart';
-
-import 'home_screen.dart';
-import 'login_screen.dart';
+import 'package:provider/provider.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -54,9 +53,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
       _usernameController.clear();
       _emailController.clear();
       _passwordController.clear();
+      Provider.of<UserProvider>(context, listen: false).refreshUser();
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => const HomeScreen(),
+          builder: (context) =>
+              ResponsiveLayoutScreen(child: const HomeScreen()),
         ),
       );
     }
@@ -71,6 +72,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
     setState(() {
       _isSigningUp = false;
     });
+  }
+
+  void logIn() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => const LoginScreen(),
+      ),
+    );
   }
 
   @override
@@ -108,7 +118,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             right: 0,
             child: CircleAvatar(
               radius: 14,
-              backgroundColor: Theme.of(context).colorScheme.primary,
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
               child: Icon(
                 Icons.add,
                 size: 16,
@@ -131,39 +141,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
       controller: _passwordController,
     );
     // Buttons
-    ButtonStyleButton signUpButton = FilledButton(
-      style: FilledButton.styleFrom(
-        minimumSize: const Size(double.infinity, 48),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-        ),
-      ),
-      onPressed: () {
-        signUp(context);
-      },
-      child: _isSigningUp
-          ? CircularProgressIndicator(
-              strokeWidth: 2,
-              color: Theme.of(context).colorScheme.onPrimary,
-            )
-          : const Text('Sign up'),
+    Widget signUpButton = PrimaryButton(
+      text: const Text('Sign up'),
+      onPressed: () => signUp(context),
+      isAsync: _isSigningUp,
     );
-    ButtonStyleButton loginButton = TextButton(
-      style: FilledButton.styleFrom(
-        minimumSize: const Size(double.infinity, 48),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-        ),
-      ),
-      onPressed: () {
-        FocusManager.instance.primaryFocus?.unfocus();
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const LoginScreen(),
-          ),
-        );
-      },
-      child: const Text('Back to login'),
+    Widget loginButton = SecondaryButton(
+      text: const Text('Back to login'),
+      onPressed: logIn,
     );
 
     return Scaffold(

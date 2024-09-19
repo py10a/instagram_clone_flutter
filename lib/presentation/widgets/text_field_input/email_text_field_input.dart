@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:instagram_clone_flutter/presentation/widgets/text_field_input.dart';
+import 'package:instagram_clone_flutter/presentation/widgets/text_field_input/text_field_input.dart';
 
 class EmailTextFieldInput extends StatelessWidget {
   const EmailTextFieldInput({

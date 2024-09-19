@@ -1,5 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone_flutter/responsivnes/base_layout_screen_scaffold.dart';
 
@@ -15,35 +14,97 @@ class MobileLayoutScreenScaffold extends BaseLayoutScreenScaffold {
 }
 
 class _MobileLayoutScreenScaffoldState extends BaseLayoutScreenScaffoldState {
-  String _username = '';
+  int _tabBarIndex = 0;
+  final PageController _pageController = PageController(initialPage: 0);
 
   @override
-  void initState() {
-    super.initState();
-    _fetchUsername();
+  void dispose() {
+    super.dispose();
+    _pageController.dispose();
   }
 
-  void _fetchUsername() async {
-    DocumentSnapshot snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get();
+  void onTabTapped(int index) {
+    setState(() {
+      _tabBarIndex = index;
+    });
+  }
 
-    if (snapshot.exists) {
-      var data = snapshot.data() as Map<String, dynamic>;
-      setState(() {
-        _username = data['username'];
-      });
-    }
+  void navigateToPage(int index) {
+    _pageController.jumpToPage(index);
+    // _pageController.animateToPage(
+    //   index,
+    //   duration: const Duration(milliseconds: 300),
+    //   curve: Curves.ease,
+    // );
   }
 
   @override
   Widget build(BuildContext context) {
+    // model.User? user = Provider.of<UserProvider>(context).user;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(_username),
+        leadingWidth: 150,
+        centerTitle: false,
+        title: Text(
+          'For you',
+          style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+        actions: [
+          CupertinoButton(
+            onPressed: () {},
+            child: const Icon(CupertinoIcons.heart),
+          ),
+          CupertinoButton(
+            onPressed: () {},
+            child: const Icon(CupertinoIcons.paperplane),
+          ),
+        ],
       ),
-      body: widget.child,
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: onTabTapped,
+        physics: const NeverScrollableScrollPhysics(),
+        children: [
+          widget.child,
+          const Center(child: Text('Search')),
+          Center(child: Text('Add')),
+          Center(child: Text('Reels')),
+          Center(child: Text('Profile')),
+        ],
+      ),
+      bottomNavigationBar: CupertinoTabBar(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        activeColor: Theme.of(context).colorScheme.primary,
+        inactiveColor: Theme.of(context).colorScheme.primary,
+        onTap: navigateToPage,
+        border: const Border(),
+        currentIndex: _tabBarIndex,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.house),
+            activeIcon: Icon(CupertinoIcons.house_fill),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.search),
+            activeIcon: Icon(CupertinoIcons.search),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.plus_app),
+            activeIcon: Icon(CupertinoIcons.plus_app_fill),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.film),
+            activeIcon: Icon(CupertinoIcons.film_fill),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.person_crop_circle),
+            activeIcon: Icon(CupertinoIcons.person_crop_circle_fill),
+          ),
+        ],
+      ),
     );
   }
 }

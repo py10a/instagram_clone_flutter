@@ -1,25 +1,32 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 const lightColorScheme = ColorScheme.light(
   brightness: Brightness.dark,
-  primary: Colors.blue,
-  onPrimary: Colors.white,
+  primary: Colors.black,
+  secondary: Colors.white,
+  primaryContainer: Colors.blue,
+  onPrimaryContainer: Colors.white,
+  surface: Colors.white,
 );
 const darkColorScheme = ColorScheme.dark(
   brightness: Brightness.dark,
-  primary: Colors.blue,
-  onPrimary: Colors.white,
+  primary: Colors.white,
+  secondary: Colors.black,
+  primaryContainer: Colors.blue,
+  onPrimaryContainer: Colors.white,
+  surface: Colors.black,
 );
 
 final lightTheme = ThemeData(
   colorScheme: lightColorScheme,
-  appBarTheme: const AppBarTheme(
-    iconTheme: IconThemeData(color: Colors.black),
-    actionsIconTheme: IconThemeData(color: Colors.black),
+  appBarTheme: AppBarTheme(
+    iconTheme: IconThemeData(color: darkColorScheme.secondary),
+    actionsIconTheme: IconThemeData(color: darkColorScheme.secondary),
     scrolledUnderElevation: 0,
   ),
   buttonTheme: ButtonThemeData(
-    buttonColor: lightColorScheme.primary,
+    buttonColor: lightColorScheme.primaryContainer,
     textTheme: ButtonTextTheme.primary,
   ),
   inputDecorationTheme: InputDecorationTheme(
@@ -50,13 +57,25 @@ final lightTheme = ThemeData(
     labelStyle: TextStyle(color: Colors.grey[500]!),
     floatingLabelStyle: TextStyle(color: Colors.grey[900]!),
   ),
+  cupertinoOverrideTheme: CupertinoThemeData(
+    primaryColor: darkColorScheme.secondary,
+    barBackgroundColor: darkColorScheme.surface,
+    textTheme: const CupertinoTextThemeData(
+      primaryColor: Colors.black,
+    ),
+  ),
 );
 
 final darkTheme = ThemeData(
   colorScheme: darkColorScheme,
+  appBarTheme: AppBarTheme(
+    iconTheme: IconThemeData(color: darkColorScheme.secondary),
+    actionsIconTheme: IconThemeData(color: darkColorScheme.secondary),
+    scrolledUnderElevation: 0,
+  ),
   buttonTheme: ButtonThemeData(
-    buttonColor: darkColorScheme.primary,
-    textTheme: ButtonTextTheme.primary,
+    buttonColor: darkColorScheme.primaryContainer,
+    textTheme: ButtonTextTheme.normal,
   ),
   inputDecorationTheme: InputDecorationTheme(
     focusedBorder: OutlineInputBorder(
@@ -82,6 +101,13 @@ final darkTheme = ThemeData(
     ),
     hintStyle: TextStyle(color: Colors.grey[400]!),
     filled: true,
-    fillColor: Colors.grey[800],
+    fillColor: Colors.grey[900],
+  ),
+  cupertinoOverrideTheme: CupertinoThemeData(
+    primaryColor: darkColorScheme.primary,
+    barBackgroundColor: darkColorScheme.surface,
+    textTheme: const CupertinoTextThemeData(
+      primaryColor: Colors.white,
+    ),
   ),
 );

@@ -11,6 +11,17 @@ class FirebaseAuthMethods implements AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  Future<model.User?> get userData async {
+    DocumentSnapshot snapshot =
+        await _firestore.collection('users').doc(_auth.currentUser?.uid).get();
+    if (snapshot.exists) {
+      return model.User.fromSnapshot(snapshot);
+    } else {
+      signOut();
+      return null;
+    }
+  }
+
   @override
   Future<String> signInWithEmailAndPassword({
     required String email,
