@@ -70,9 +70,9 @@ class _MobileLayoutScreenScaffoldState extends BaseLayoutScreenScaffoldState {
         children: [
           widget.child,
           const Center(child: Text('Search')),
-          Center(child: Text('Add')),
-          Center(child: Text('Reels')),
-          Center(child: Text('Profile')),
+          const Center(child: Text('Add')),
+          const Center(child: Text('Reels')),
+          const Center(child: Text('Profile')),
         ],
       ),
       bottomNavigationBar: CupertinoTabBar(

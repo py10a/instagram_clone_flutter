@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:instagram_clone_flutter/providers/user_provider.dart';
-import 'package:instagram_clone_flutter/repository/models/user.dart' as model;
 import 'package:instagram_clone_flutter/responsivnes/desktop_layout_screen_scaffold.dart';
 import 'package:instagram_clone_flutter/responsivnes/mobile_layout_screen_scaffold.dart';
 import 'package:instagram_clone_flutter/responsivnes/web_layout_screen_scaffold.dart';
@@ -38,8 +37,6 @@ class _ResponsiveLayoutScreenState extends State<ResponsiveLayoutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    model.User? user = Provider.of<UserProvider>(context).user;
-
     return LayoutBuilder(builder: (context, constraints) {
       if (constraints.maxWidth < mobileScreenWidth) {
         return widget.mobileScreenLayout;
