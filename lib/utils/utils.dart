@@ -14,20 +14,20 @@ Future<Uint8List> pickImage(ImageSource source) async {
   }
 }
 
-void showSnackBar({
+void showSnackBar(
+  String text, {
   required BuildContext context,
-  required String text,
-  required bool isError,
+  bool isError = false,
 }) {
   ScaffoldMessenger.of(context).hideCurrentSnackBar();
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      // action: SnackBarAction(
-      //   label: 'Close',
-      //   onPressed: () {
-      //     ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      //   },
-      // ),
+      action: SnackBarAction(
+        label: 'Close',
+        onPressed: () {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        },
+      ),
       content: Text(text),
       backgroundColor: isError ? Colors.red : Colors.green,
     ),

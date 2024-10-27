@@ -9,7 +9,7 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -28,15 +28,15 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _isLoading = true;
     });
-    String res = await FirebaseAuthMethods().signInWithEmailAndPassword(
+    String res = await FirebaseAuthMethods.instance.signInWithEmailAndPassword(
       email: _emailController.text,
       password: _passwordController.text,
     );
     FocusManager.instance.primaryFocus?.unfocus();
     if (mounted) {
       showSnackBar(
+        res,
         context: context,
-        text: res,
         isError: res != 'success',
       );
     }
@@ -65,6 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
       tag: 'logo',
       child: SvgPicture.asset(
         'assets/images/instagram_logo.svg',
+        // ignore: deprecated_member_use
         color: color,
         width: 200,
       ),

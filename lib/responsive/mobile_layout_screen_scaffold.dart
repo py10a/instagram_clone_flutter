@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram_clone_flutter/responsivnes/base_layout_screen_scaffold.dart';
+import 'package:instagram_clone_flutter/responsive/base_layout_screen_scaffold.dart';
+import 'package:instagram_clone_flutter/utils/global.dart';
 
 class MobileLayoutScreenScaffold extends BaseLayoutScreenScaffold {
   const MobileLayoutScreenScaffold({
@@ -9,7 +10,7 @@ class MobileLayoutScreenScaffold extends BaseLayoutScreenScaffold {
   });
 
   @override
-  _MobileLayoutScreenScaffoldState createState() =>
+  BaseLayoutScreenScaffoldState createState() =>
       _MobileLayoutScreenScaffoldState();
 }
 
@@ -40,40 +41,12 @@ class _MobileLayoutScreenScaffoldState extends BaseLayoutScreenScaffoldState {
 
   @override
   Widget build(BuildContext context) {
-    // model.User? user = Provider.of<UserProvider>(context).user;
-
     return Scaffold(
-      appBar: AppBar(
-        leadingWidth: 150,
-        centerTitle: false,
-        title: Text(
-          'For you',
-          style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-        ),
-        actions: [
-          CupertinoButton(
-            onPressed: () {},
-            child: const Icon(CupertinoIcons.heart),
-          ),
-          CupertinoButton(
-            onPressed: () {},
-            child: const Icon(CupertinoIcons.paperplane),
-          ),
-        ],
-      ),
       body: PageView(
         controller: _pageController,
         onPageChanged: onTabTapped,
         physics: const NeverScrollableScrollPhysics(),
-        children: [
-          widget.child,
-          const Center(child: Text('Search')),
-          const Center(child: Text('Add')),
-          const Center(child: Text('Reels')),
-          const Center(child: Text('Profile')),
-        ],
+        children: homeScreenItems,
       ),
       bottomNavigationBar: CupertinoTabBar(
         backgroundColor: Theme.of(context).colorScheme.surface,

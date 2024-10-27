@@ -3,8 +3,8 @@ import 'package:instagram_clone_flutter/repository/auth/firebase_auth_methods.da
 import 'package:instagram_clone_flutter/repository/models/user.dart';
 
 class UserProvider with ChangeNotifier {
+  final _firebaseAuthMethods = FirebaseAuthMethods.instance;
   User? _user;
-  final FirebaseAuthMethods _firebaseAuthMethods = FirebaseAuthMethods();
 
   User? get user => _user;
 

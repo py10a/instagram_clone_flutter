@@ -8,6 +8,10 @@ import 'package:instagram_clone_flutter/repository/storage/firebase_storage_meth
 import 'auth_methods.dart';
 
 class FirebaseAuthMethods implements AuthMethods {
+  FirebaseAuthMethods._();
+  static final instance = FirebaseAuthMethods._();
+  factory FirebaseAuthMethods() => instance;
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -62,10 +66,14 @@ class FirebaseAuthMethods implements AuthMethods {
           password.isNotEmpty &&
           image.isNotEmpty;
       if (validated) {
-        UserCredential credentials = await _auth.createUserWithEmailAndPassword(
-            email: email, password: password);
-        String imageUrl = await FirebaseStorageMethods().uploadFile(
-            path: 'images/avatars/${credentials.user!.uid}', file: image);
+        final credentials = await _auth.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+        final imageUrl = await FirebaseStorageMethods.instance.uploadFile(
+          path: 'images/avatars/${credentials.user!.uid}',
+          file: image,
+        );
         model.User user = model.User(
           uid: _auth.currentUser!.uid,
           email: email,
@@ -78,6 +86,9 @@ class FirebaseAuthMethods implements AuthMethods {
             .collection('users')
             .doc(credentials.user!.uid)
             .set(user.toJson());
+        _auth.currentUser!.updateDisplayName(username);
+        _auth.currentUser!.updatePhotoURL(imageUrl);
+        _auth.currentUser!.reload();
         return 'success';
       } else {
         return ('Please fill in all fields');

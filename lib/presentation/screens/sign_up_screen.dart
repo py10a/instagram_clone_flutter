@@ -6,7 +6,7 @@ import 'package:instagram_clone_flutter/presentation/screens/screens.dart';
 import 'package:instagram_clone_flutter/presentation/widgets/widgets.dart';
 import 'package:instagram_clone_flutter/providers/user_provider.dart';
 import 'package:instagram_clone_flutter/repository/auth/firebase_auth_methods.dart';
-import 'package:instagram_clone_flutter/responsivnes/responsive_layout_screen.dart';
+import 'package:instagram_clone_flutter/responsive/responsive_layout_screen.dart';
 import 'package:instagram_clone_flutter/utils/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -14,7 +14,7 @@ class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
   @override
-  _SignUpScreenState createState() => _SignUpScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
@@ -43,7 +43,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     setState(() {
       _isSigningUp = true;
     });
-    String response = await FirebaseAuthMethods().signUpWithEmailAndPassword(
+    String response =
+        await FirebaseAuthMethods.instance.signUpWithEmailAndPassword(
       email: _emailController.text,
       username: _usernameController.text,
       password: _passwordController.text,
@@ -63,8 +64,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
     if (mounted) {
       showSnackBar(
+        response,
         context: context,
-        text: response,
         isError: response != 'success',
       );
     }
@@ -93,6 +94,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       tag: 'logo',
       child: SvgPicture.asset(
         'assets/images/instagram_logo.svg',
+        // ignore: deprecated_member_use
         color: color,
         width: 100,
       ),

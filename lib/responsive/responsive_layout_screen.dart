@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:instagram_clone_flutter/providers/user_provider.dart';
-import 'package:instagram_clone_flutter/responsivnes/desktop_layout_screen_scaffold.dart';
-import 'package:instagram_clone_flutter/responsivnes/mobile_layout_screen_scaffold.dart';
-import 'package:instagram_clone_flutter/responsivnes/web_layout_screen_scaffold.dart';
+import 'package:instagram_clone_flutter/responsive/desktop_layout_screen_scaffold.dart';
+import 'package:instagram_clone_flutter/responsive/mobile_layout_screen_scaffold.dart';
+import 'package:instagram_clone_flutter/responsive/web_layout_screen_scaffold.dart';
 import 'package:provider/provider.dart';
 
 import '../utils/dimensions.dart';

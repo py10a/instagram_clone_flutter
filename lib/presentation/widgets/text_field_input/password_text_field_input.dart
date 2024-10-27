@@ -10,7 +10,7 @@ class PasswordTextFieldInput extends StatefulWidget {
   final TextEditingController controller;
 
   @override
-  _PasswordTextFieldInputState createState() => _PasswordTextFieldInputState();
+  State<PasswordTextFieldInput> createState() => _PasswordTextFieldInputState();
 }
 
 class _PasswordTextFieldInputState extends State<PasswordTextFieldInput> {
