@@ -24,14 +24,14 @@ class _AddPostScreenState extends State<AddPostScreen> {
   Uint8List? _image;
   bool _isUploading = false;
 
-  Future<void> postImage(BuildContext context) async {
+  Future<String> postImage(BuildContext context) async {
     if (_image == null) {
       showSnackBar(
         'Please select an image',
         context: context,
         isError: true,
       );
-      return;
+      return '';
     }
     setState(() {
       _isUploading = true;
@@ -56,6 +56,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
         ),
       );
     }
+    return pathToPost;
   }
 
   Future<void> _selectImage(BuildContext context) async {

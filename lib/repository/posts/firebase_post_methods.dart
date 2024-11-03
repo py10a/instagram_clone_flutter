@@ -7,14 +7,20 @@ import 'package:instagram_clone_flutter/repository/posts/post_methods.dart';
 import 'package:instagram_clone_flutter/repository/storage/firebase_storage_methods.dart';
 import 'package:uuid/uuid.dart';
 
+final _storageMethods = FirebaseStorageMethods.instance;
+final _firestore = FirebaseFirestore.instance;
+final _auth = FirebaseAuth.instance;
+
+/// Firebase implementation of [PostMethods]
+///
+/// This class is a singleton, so it should be accessed using the following:
+/// - [FirebasePostMethods()] constructor (a factory).
+/// - [FirebasePostMethods.instance] getter.
+///
 class FirebasePostMethods implements PostMethods {
   FirebasePostMethods._();
   static final instance = FirebasePostMethods._();
   factory FirebasePostMethods() => instance;
-
-  final _storageMethods = FirebaseStorageMethods.instance;
-  final _firestore = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
 
   @override
   Future<String> createPost({
@@ -42,12 +48,13 @@ class FirebasePostMethods implements PostMethods {
         datePublished: DateTime.now(),
       );
 
-      var a = await _firestore
-          .collection('posts/${_auth.currentUser!.uid}')
-          .doc(postId)
-          .set(post.toJson());
+      // TODO: Implement this method
+      // await _firestore
+      //     .collection('posts/${_auth.currentUser!.uid}')
+      //     .doc(postId)
+      //     .set(post.toJson());
 
-      var b = await _firestore
+      await _firestore
           .collection('posts/${_auth.currentUser!.uid}/$postId')
           .add(post.toJson());
 

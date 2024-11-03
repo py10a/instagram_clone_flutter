@@ -2,21 +2,27 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:instagram_clone_flutter/repository/auth/auth_methods.dart';
 import 'package:instagram_clone_flutter/repository/models/user.dart' as model;
 import 'package:instagram_clone_flutter/repository/storage/firebase_storage_methods.dart';
 
-import 'auth_methods.dart';
+final _auth = FirebaseAuth.instance;
+final _firestore = FirebaseFirestore.instance;
+final _storageMethods = FirebaseStorageMethods.instance;
 
+/// A class that implements [AuthMethods] using Firebase Authentication.
+///
+/// This class is a singleton, so it should be accessed using the following:
+/// - [FirebaseAuthMethods()] constructor (a factory).
+/// - [FirebaseAuthMethods.instance] getter.
+///
 class FirebaseAuthMethods implements AuthMethods {
   FirebaseAuthMethods._();
   static final instance = FirebaseAuthMethods._();
   factory FirebaseAuthMethods() => instance;
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
   Future<model.User?> get userData async {
-    DocumentSnapshot snapshot =
+    final snapshot =
         await _firestore.collection('users').doc(_auth.currentUser?.uid).get();
     if (snapshot.exists) {
       return model.User.fromSnapshot(snapshot);
@@ -70,7 +76,7 @@ class FirebaseAuthMethods implements AuthMethods {
           email: email,
           password: password,
         );
-        final imageUrl = await FirebaseStorageMethods.instance.uploadFile(
+        final imageUrl = await _storageMethods.uploadFile(
           path: 'images/avatars/${credentials.user!.uid}',
           file: image,
         );
@@ -86,9 +92,9 @@ class FirebaseAuthMethods implements AuthMethods {
             .collection('users')
             .doc(credentials.user!.uid)
             .set(user.toJson());
-        _auth.currentUser!.updateDisplayName(username);
-        _auth.currentUser!.updatePhotoURL(imageUrl);
-        _auth.currentUser!.reload();
+        await _auth.currentUser!.updateDisplayName(username);
+        await _auth.currentUser!.updatePhotoURL(imageUrl);
+        await _auth.currentUser!.reload();
         return 'success';
       } else {
         return ('Please fill in all fields');
