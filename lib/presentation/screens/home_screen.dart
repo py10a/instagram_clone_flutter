@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_clone_flutter/presentation/widgets/post_card.dart';
 import 'package:instagram_clone_flutter/providers/user_provider.dart';
 import 'package:instagram_clone_flutter/repository/models/user.dart' as model;
 import 'package:provider/provider.dart';
+
+final firestore = FirebaseFirestore.instance;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,11 +17,23 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   model.User? user;
+  late Stream<QuerySnapshot> _postStream;
+
+  @override
+  void initState() {
+    super.initState();
+    user = Provider.of<UserProvider>(context, listen: false).user;
+    _postStream = firestore.collection('posts').snapshots();
+  }
+
+  void refreshStream() {
+    setState(() {
+      _postStream = firestore.collection('posts').snapshots();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    user = Provider.of<UserProvider>(context).user;
-
     return Scaffold(
       appBar: AppBar(
         leadingWidth: 150,
@@ -38,6 +54,36 @@ class _HomeScreenState extends State<HomeScreen> {
             child: const Icon(CupertinoIcons.paperplane),
           ),
         ],
+      ),
+      body: StreamBuilder(
+        stream: _postStream,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final postList = snapshot.data!.docs;
+          return RefreshIndicator(
+            displacement: 0,
+            strokeWidth: 2,
+            child: ListView.builder(
+              itemCount: postList.length,
+              itemBuilder: (context, index) {
+                return PostCard(
+                  username: postList[index]['username'],
+                  userImageUrl: postList[index]['avatarUrl'],
+                  postImageUrl: postList[index]['postUrl'],
+                  postDate: postList[index]['datePublished'],
+                  postContent: postList[index]['description'],
+                  likes: postList[index]['likes'].length,
+                );
+              },
+            ),
+            onRefresh: () async {
+              await Future.delayed(Duration(seconds: 2));
+              refreshStream();
+            },
+          );
+        },
       ),
     );
   }

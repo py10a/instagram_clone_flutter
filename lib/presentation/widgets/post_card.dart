@@ -20,8 +20,8 @@ class PostCard extends StatelessWidget {
   final String userImageUrl;
   final String postDate;
   final String postContent;
-  final String postImageUrl;
-  final int likes;
+  final String postImageUrl; // 'https://via.placeholder.com/150'
+  final int likes; // 'https://via.placeholder.com/150'
 
   @override
   Widget build(BuildContext context) {
