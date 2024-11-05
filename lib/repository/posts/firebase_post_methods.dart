@@ -31,34 +31,21 @@ class FirebasePostMethods implements PostMethods {
     required Uint8List postImage,
   }) async {
     try {
-      final postUrl = await _storageMethods.uploadFile(
-          path: 'posts/${_auth.currentUser!.uid}', file: postImage);
-
       final postId = const Uuid().v1();
-      print(postId);
-
+      final postImageUrl = await _storageMethods.uploadFile(
+          path: 'posts/${_auth.currentUser!.uid}/$postId', file: postImage);
       Post post = Post(
         uid: uid,
         postId: postId,
-        postUrl: postUrl,
+        postUrl: postImageUrl,
         avatarUrl: avatarUrl,
         username: username,
         description: description,
         likes: [],
         datePublished: DateTime.now(),
       );
-
-      // TODO: Implement this method
-      // await _firestore
-      //     .collection('posts/${_auth.currentUser!.uid}')
-      //     .doc(postId)
-      //     .set(post.toJson());
-
-      await _firestore
-          .collection('posts/${_auth.currentUser!.uid}/$postId')
-          .add(post.toJson());
-
-      return 'posts/${_auth.currentUser!.uid}/$postId';
+      await _firestore.collection('posts').doc(postId).set(post.toJson());
+      return 'posts/$postId';
     } catch (e) {
       return e.toString();
     }
