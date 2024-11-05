@@ -3,6 +3,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+/// Pick an image from the gallery or camera
+/// and return it as a [Uint8List]
+///
 Future<Uint8List> pickImage(ImageSource source) async {
   ImagePicker picker = ImagePicker();
   XFile? file = await picker.pickImage(source: source);
@@ -14,6 +17,9 @@ Future<Uint8List> pickImage(ImageSource source) async {
   }
 }
 
+/// Show a [SnackBar] with the given [text]
+/// and optional [isError] flag
+///
 void showSnackBar(
   String text, {
   required BuildContext context,
@@ -32,4 +38,31 @@ void showSnackBar(
       backgroundColor: isError ? Colors.red : Colors.green,
     ),
   );
+}
+
+/// Get date in a human-readable format from the given [date]
+///
+/// - Input format: '2021-07-01T12:00:00.000Z'
+/// - Output format:
+///   - if today, then '2 hours ago'
+///   - if this week, then '2 days ago'
+///   - else 'May 1, 2021'
+///
+String getHumanReadableDate(String date) {
+  final DateTime dateTime = DateTime.parse(date);
+  final DateTime now = DateTime.now();
+  final Duration diff = now.difference(dateTime);
+
+  switch (diff.inDays) {
+    case 0:
+      return diff.inHours == 0
+          ? diff.inMinutes == 0
+              ? 'Just now'
+              : '${diff.inMinutes} minutes ago'
+          : '${diff.inHours} hours ago';
+    default:
+      return diff.inDays < 7
+          ? '${diff.inDays} days ago'
+          : '${dateTime.month}/${dateTime.day}/${dateTime.year}';
+  }
 }

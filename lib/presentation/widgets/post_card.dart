@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_clone_flutter/utils/utils.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 const cardContentOnlyWidthPadding = EdgeInsets.symmetric(horizontal: 16);
@@ -12,13 +13,15 @@ class PostCard extends StatelessWidget {
     required this.postDate,
     required this.postContent,
     required this.postImageUrl,
+    required this.likes,
   });
 
   final String username;
   final String userImageUrl;
   final String postDate;
   final String postContent;
-  final String postImageUrl; // 'https://via.placeholder.com/150'
+  final String postImageUrl;
+  final int likes;
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +33,13 @@ class PostCard extends StatelessWidget {
         // Header of the post
         ListTile(
           contentPadding: cardContentOnlyWidthPadding,
-          leading: CircleAvatar(backgroundImage: NetworkImage(userImageUrl)),
+          leading: CircleAvatar(
+            backgroundColor: Colors.grey[200],
+            foregroundImage: NetworkImage(userImageUrl),
+          ),
           title: Text(username, style: TextStyle(fontWeight: FontWeight.bold)),
-          subtitle:
-              Text(postDate, style: TextStyle(fontWeight: FontWeight.normal)),
+          subtitle: Text(getHumanReadableDate(postDate),
+              style: TextStyle(fontWeight: FontWeight.normal)),
           trailing: IconButton(
             icon: Icon(CupertinoIcons.ellipsis_vertical),
             onPressed: () {},
@@ -42,6 +48,8 @@ class PostCard extends StatelessWidget {
         // Photo of the post
         FadeInImage.memoryNetwork(
           placeholder: kTransparentImage,
+          placeholderColor: Colors.grey[200],
+          placeholderFit: BoxFit.cover,
           fit: BoxFit.cover,
           width: double.infinity,
           height: 400,
@@ -82,7 +90,7 @@ class PostCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('100 likes',
+              Text('$likes likes',
                   style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16)),
               SizedBox(height: 8),
               RichText(
