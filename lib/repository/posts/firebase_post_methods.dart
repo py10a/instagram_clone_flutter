@@ -24,7 +24,7 @@ class FirebasePostMethods implements PostMethods {
 
   @override
   Future<String> createPost({
-    required String uid,
+    required String id,
     required String avatarUrl,
     required String username,
     required String description,
@@ -35,7 +35,7 @@ class FirebasePostMethods implements PostMethods {
       final postImageUrl = await _storageMethods.uploadFile(
           path: 'posts/${_auth.currentUser!.uid}/$postId', file: postImage);
       Post post = Post(
-        uid: uid,
+        uid: id,
         postId: postId,
         postUrl: postImageUrl,
         avatarUrl: avatarUrl,
@@ -52,18 +52,36 @@ class FirebasePostMethods implements PostMethods {
   }
 
   @override
-  Future deletePost({required String id}) {
+  Future deletePost({
+    required String id,
+  }) {
     // TODO: implement deletePost
     throw UnimplementedError();
   }
 
   @override
-  Future updatePost(
-      {required String id,
-      required String title,
-      required String content,
-      required String image}) {
-    // TODO: implement updatePost
+  Future updatePost({
+    required String id,
+    String? title,
+    String? content,
+    String? image,
+  }) {
     throw UnimplementedError();
+  }
+
+  Future updateLikes({
+    required String postId,
+    required String userId,
+  }) async {
+    final postRef = _firestore.collection('posts').doc(postId);
+    final postJson = await postRef.get() as Map<String, dynamic>;
+    final post = Post.fromJson(postJson);
+    final likes = post.likes;
+    if (likes.contains(userId)) {
+      likes.remove(userId);
+    } else {
+      likes.add(userId);
+    }
+    await postRef.update({'likes': likes});
   }
 }

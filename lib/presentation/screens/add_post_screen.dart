@@ -37,7 +37,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
       _isUploading = true;
     });
     final pathToPost = await _firebasePostMethods.createPost(
-      uid: _firebaseAuth.currentUser!.uid,
+      id: _firebaseAuth.currentUser!.uid,
       avatarUrl: _firebaseAuth.currentUser!.photoURL!,
       username: _firebaseAuth.currentUser!.displayName!,
       description: _descriptionController.text,
