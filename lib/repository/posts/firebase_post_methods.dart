@@ -11,16 +11,14 @@ final _storageMethods = FirebaseStorageMethods.instance;
 final _firestore = FirebaseFirestore.instance;
 final _auth = FirebaseAuth.instance;
 
-/// Firebase implementation of [PostMethods]
-///
-/// This class is a singleton, so it should be accessed using the following:
-/// - [FirebasePostMethods()] constructor (a factory).
-/// - [FirebasePostMethods.instance] getter.
-///
 class FirebasePostMethods implements PostMethods {
   FirebasePostMethods._();
   static final instance = FirebasePostMethods._();
   factory FirebasePostMethods() => instance;
+
+  DocumentReference<Map<String, dynamic>> getPostRefById(String postId) {
+    return _firestore.collection('posts').doc(postId);
+  }
 
   @override
   Future<String> createPost({
@@ -34,7 +32,7 @@ class FirebasePostMethods implements PostMethods {
       final postId = const Uuid().v1();
       final postImageUrl = await _storageMethods.uploadFile(
           path: 'posts/${_auth.currentUser!.uid}/$postId', file: postImage);
-      Post post = Post(
+      final post = Post(
         uid: id,
         postId: postId,
         postUrl: postImageUrl,
@@ -44,7 +42,7 @@ class FirebasePostMethods implements PostMethods {
         likes: [],
         datePublished: DateTime.now(),
       );
-      await _firestore.collection('posts').doc(postId).set(post.toJson());
+      await getPostRefById(postId).set(post.toJson());
       return 'posts/$postId';
     } catch (e) {
       return e.toString();
@@ -52,36 +50,46 @@ class FirebasePostMethods implements PostMethods {
   }
 
   @override
-  Future deletePost({
-    required String id,
-  }) {
+  Future<void> deletePost({required String id}) async {
     // TODO: implement deletePost
     throw UnimplementedError();
   }
 
   @override
-  Future updatePost({
+  Future<void> updatePost({
     required String id,
     String? title,
     String? content,
     String? image,
-  }) {
+  }) async {
+    // TODO: implement updatePost
     throw UnimplementedError();
   }
 
-  Future updateLikes({
+  Future<bool> isLikedByUser({
     required String postId,
     required String userId,
   }) async {
-    final postRef = _firestore.collection('posts').doc(postId);
-    final postJson = await postRef.get() as Map<String, dynamic>;
-    final post = Post.fromJson(postJson);
+    final post = await getPostById(postId);
+    return post.likes.contains(userId);
+  }
+
+  Future<void> updateLikes({
+    required String postId,
+    required String userId,
+  }) async {
+    final post = await getPostById(postId);
     final likes = post.likes;
     if (likes.contains(userId)) {
       likes.remove(userId);
     } else {
       likes.add(userId);
     }
-    await postRef.update({'likes': likes});
+    await getPostRefById(postId).update({'likes': likes});
+  }
+
+  Future<Post> getPostById(String postId) async {
+    final postJson = await getPostRefById(postId).get();
+    return Post.fromJson(postJson.data() ?? {});
   }
 }
