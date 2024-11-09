@@ -1,45 +1,45 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone_flutter/presentation/widgets/like_animation.dart';
+import 'package:instagram_clone_flutter/providers/user_provider.dart';
+import 'package:instagram_clone_flutter/repository/models/post.dart';
+import 'package:instagram_clone_flutter/repository/models/user.dart' as model;
+import 'package:instagram_clone_flutter/repository/posts/firebase_post_methods.dart';
 import 'package:instagram_clone_flutter/utils/utils.dart';
+import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-const cardContentOnlyWidthPadding = EdgeInsets.symmetric(horizontal: 16);
+const _cardContentOnlyWidthPadding = EdgeInsets.symmetric(horizontal: 16);
+final _firebasePostMethods = FirebasePostMethods.instance;
 
-///
-/// A widget that displays a post card in the feed.
-///
-/// It displays the user's profile picture, username, post date, post content,
-/// post image, and the number of likes.
-/// It also allows the user to like, comment, and share the post.
-///
 class PostCard extends StatefulWidget {
   const PostCard({
     super.key,
-    required this.username,
-    required this.userImageUrl,
-    required this.postDate,
-    required this.postContent,
-    required this.postImageUrl,
-    required this.likes,
+    required this.post,
   });
 
-  final String username;
-  final String userImageUrl;
-  final DateTime postDate;
-  final String postContent;
-  final String postImageUrl;
-  final int likes;
+  final Post post;
 
   @override
   State<PostCard> createState() => _PostCardState();
 }
 
 class _PostCardState extends State<PostCard> {
-  bool isLiked = false;
+  model.User? user;
+  bool _likeAnimation = false;
+
+  Future<void> likePost() async {
+    await _firebasePostMethods.updateLikes(
+      postId: widget.post.postId,
+      userId: user!.uid,
+    );
+    setState(() => _likeAnimation = !_likeAnimation);
+  }
 
   @override
   Widget build(BuildContext context) {
+    user = Provider.of<UserProvider>(context).user;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -47,14 +47,14 @@ class _PostCardState extends State<PostCard> {
       children: [
         // Header of the post
         ListTile(
-          contentPadding: cardContentOnlyWidthPadding,
+          contentPadding: _cardContentOnlyWidthPadding,
           leading: CircleAvatar(
             backgroundColor: Colors.grey[200],
-            foregroundImage: NetworkImage(widget.userImageUrl),
+            foregroundImage: NetworkImage(widget.post.avatarUrl),
           ),
-          title: Text(widget.username,
+          title: Text(widget.post.username,
               style: TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Text(getHumanReadableDate(widget.postDate),
+          subtitle: Text(getHumanReadableDate(widget.post.datePublished),
               style: TextStyle(fontWeight: FontWeight.normal)),
           trailing: IconButton(
             icon: Icon(CupertinoIcons.ellipsis_vertical),
@@ -63,7 +63,7 @@ class _PostCardState extends State<PostCard> {
         ),
         // Photo of the post
         GestureDetector(
-          onDoubleTap: () => setState(() => isLiked = true),
+          onDoubleTap: () async => await likePost(),
           child: Stack(
             alignment: Alignment.center,
             children: [
@@ -74,11 +74,14 @@ class _PostCardState extends State<PostCard> {
                 fit: BoxFit.cover,
                 width: double.infinity,
                 height: 400,
-                image: NetworkImage(widget.postImageUrl).url,
+                image: NetworkImage(widget.post.postUrl).url,
               ),
               LikeAnimation(
-                  isAnimating: isLiked,
-                  onEnd: () => setState(() => isLiked = false)),
+                isAnimating: _likeAnimation,
+                onEnd: () {
+                  setState(() => _likeAnimation = !_likeAnimation);
+                },
+              ),
             ],
           ),
         ),
@@ -87,8 +90,10 @@ class _PostCardState extends State<PostCard> {
           children: [
             CupertinoButton(
               padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              child: Icon(CupertinoIcons.heart),
-              onPressed: () {},
+              onPressed: () => likePost(),
+              child: widget.post.likes.contains(user!.uid)
+                  ? Icon(CupertinoIcons.heart_fill, color: Colors.red[300])
+                  : Icon(CupertinoIcons.heart, color: Colors.black),
             ),
             CupertinoButton(
               padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -113,11 +118,11 @@ class _PostCardState extends State<PostCard> {
           ],
         ),
         Padding(
-          padding: cardContentOnlyWidthPadding,
+          padding: _cardContentOnlyWidthPadding,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('${widget.likes} likes',
+              Text('${widget.post.likes.length} likes',
                   style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16)),
               SizedBox(height: 8),
               RichText(
@@ -130,11 +135,11 @@ class _PostCardState extends State<PostCard> {
                   ),
                   children: [
                     TextSpan(
-                      text: widget.username,
+                      text: widget.post.username,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     TextSpan(text: ' '),
-                    TextSpan(text: widget.postContent),
+                    TextSpan(text: widget.post.description),
                   ],
                 ),
               ),

@@ -16,7 +16,7 @@ class LikeAnimation extends StatefulWidget {
     this.child = const Icon(CupertinoIcons.heart_fill, size: childSize),
     this.duration = const Duration(seconds: 1),
     required this.isAnimating,
-    required this.onEnd,
+    this.onEnd,
   });
 
   @override

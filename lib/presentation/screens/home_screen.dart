@@ -72,14 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
               itemBuilder: (context, index) {
                 final post = Post.fromJson(
                     postList[index].data() as Map<String, dynamic>);
-                return PostCard(
-                  username: post.username,
-                  userImageUrl: post.avatarUrl,
-                  postImageUrl: post.postUrl,
-                  postDate: post.datePublished,
-                  postContent: post.description,
-                  likes: post.likes.length,
-                );
+                return PostCard(post: post);
               },
             ),
             onRefresh: () async {
