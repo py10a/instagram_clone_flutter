@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone_flutter/presentation/widgets/post_card.dart';
 import 'package:instagram_clone_flutter/providers/user_provider.dart';
+import 'package:instagram_clone_flutter/repository/models/post.dart';
 import 'package:instagram_clone_flutter/repository/models/user.dart' as model;
 import 'package:provider/provider.dart';
 
@@ -40,9 +41,10 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: false,
         title: Text(
           'For you',
-          style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(context)
+              .textTheme
+              .headlineSmall!
+              .copyWith(fontWeight: FontWeight.bold),
         ),
         actions: [
           CupertinoButton(
@@ -68,13 +70,15 @@ class _HomeScreenState extends State<HomeScreen> {
             child: ListView.builder(
               itemCount: postList.length,
               itemBuilder: (context, index) {
+                final post = Post.fromJson(
+                    postList[index].data() as Map<String, dynamic>);
                 return PostCard(
-                  username: postList[index]['username'],
-                  userImageUrl: postList[index]['avatarUrl'],
-                  postImageUrl: postList[index]['postUrl'],
-                  postDate: postList[index]['datePublished'],
-                  postContent: postList[index]['description'],
-                  likes: postList[index]['likes'].length,
+                  username: post.username,
+                  userImageUrl: post.avatarUrl,
+                  postImageUrl: post.postUrl,
+                  postDate: post.datePublished,
+                  postContent: post.description,
+                  likes: post.likes.length,
                 );
               },
             ),
