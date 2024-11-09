@@ -1,11 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_clone_flutter/presentation/widgets/like_animation.dart';
 import 'package:instagram_clone_flutter/utils/utils.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 const cardContentOnlyWidthPadding = EdgeInsets.symmetric(horizontal: 16);
 
-class PostCard extends StatelessWidget {
+///
+/// A widget that displays a post card in the feed.
+///
+/// It displays the user's profile picture, username, post date, post content,
+/// post image, and the number of likes.
+/// It also allows the user to like, comment, and share the post.
+///
+class PostCard extends StatefulWidget {
   const PostCard({
     super.key,
     required this.username,
@@ -20,8 +28,15 @@ class PostCard extends StatelessWidget {
   final String userImageUrl;
   final DateTime postDate;
   final String postContent;
-  final String postImageUrl; // 'https://via.placeholder.com/150'
-  final int likes; // 'https://via.placeholder.com/150'
+  final String postImageUrl;
+  final int likes;
+
+  @override
+  State<PostCard> createState() => _PostCardState();
+}
+
+class _PostCardState extends State<PostCard> {
+  bool isLiked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +50,7 @@ class PostCard extends StatelessWidget {
           contentPadding: cardContentOnlyWidthPadding,
           leading: CircleAvatar(
             backgroundColor: Colors.grey[200],
-            foregroundImage: NetworkImage(userImageUrl),
+            foregroundImage: NetworkImage(widget.userImageUrl),
           ),
           title: Text(widget.username,
               style: TextStyle(fontWeight: FontWeight.bold)),
@@ -47,14 +62,25 @@ class PostCard extends StatelessWidget {
           ),
         ),
         // Photo of the post
-        FadeInImage.memoryNetwork(
-          placeholder: kTransparentImage,
-          placeholderColor: Colors.grey[200],
-          placeholderFit: BoxFit.cover,
-          fit: BoxFit.cover,
-          width: double.infinity,
-          height: 400,
-          image: NetworkImage(postImageUrl).url,
+        GestureDetector(
+          onDoubleTap: () => setState(() => isLiked = true),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              FadeInImage.memoryNetwork(
+                placeholder: kTransparentImage,
+                placeholderColor: Colors.grey[200],
+                placeholderFit: BoxFit.cover,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: 400,
+                image: NetworkImage(widget.postImageUrl).url,
+              ),
+              LikeAnimation(
+                  isAnimating: isLiked,
+                  onEnd: () => setState(() => isLiked = false)),
+            ],
+          ),
         ),
         // Footer of the post
         Row(
@@ -91,23 +117,24 @@ class PostCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('$likes likes',
+              Text('${widget.likes} likes',
                   style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16)),
               SizedBox(height: 8),
               RichText(
                 maxLines: 3,
                 text: TextSpan(
                   style: TextStyle(
+                    inherit: false,
                     fontWeight: FontWeight.normal,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   children: [
                     TextSpan(
-                      text: username,
+                      text: widget.username,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     TextSpan(text: ' '),
-                    TextSpan(text: postContent),
+                    TextSpan(text: widget.postContent),
                   ],
                 ),
               ),
