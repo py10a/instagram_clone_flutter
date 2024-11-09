@@ -42,16 +42,13 @@ void showSnackBar(
 
 /// Get date in a human-readable format from the given [date]
 ///
-/// - Input format: '2021-07-01T12:00:00.000Z'
-/// - Output format:
 ///   - if today, then '2 hours ago'
 ///   - if this week, then '2 days ago'
 ///   - else 'May 1, 2021'
 ///
-String getHumanReadableDate(String date) {
-  final DateTime dateTime = DateTime.parse(date);
+String getHumanReadableDate(DateTime date) {
   final DateTime now = DateTime.now();
-  final Duration diff = now.difference(dateTime);
+  final Duration diff = now.difference(date);
 
   switch (diff.inDays) {
     case 0:
@@ -63,6 +60,6 @@ String getHumanReadableDate(String date) {
     default:
       return diff.inDays < 7
           ? '${diff.inDays} days ago'
-          : '${dateTime.month}/${dateTime.day}/${dateTime.year}';
+          : '${date.month}/${date.day}/${date.year}';
   }
 }

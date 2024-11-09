@@ -18,7 +18,7 @@ class PostCard extends StatelessWidget {
 
   final String username;
   final String userImageUrl;
-  final String postDate;
+  final DateTime postDate;
   final String postContent;
   final String postImageUrl; // 'https://via.placeholder.com/150'
   final int likes; // 'https://via.placeholder.com/150'
@@ -37,8 +37,9 @@ class PostCard extends StatelessWidget {
             backgroundColor: Colors.grey[200],
             foregroundImage: NetworkImage(userImageUrl),
           ),
-          title: Text(username, style: TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Text(getHumanReadableDate(postDate),
+          title: Text(widget.username,
+              style: TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: Text(getHumanReadableDate(widget.postDate),
               style: TextStyle(fontWeight: FontWeight.normal)),
           trailing: IconButton(
             icon: Icon(CupertinoIcons.ellipsis_vertical),
