@@ -88,6 +88,17 @@ class FirebasePostMethods implements PostMethods {
     await getPostRefById(postId).update({'likes': likes});
   }
 
+  Future<List<Post>> get posts async {
+    final postsJson = await _firestore.collection('posts').get();
+    return postsJson.docs
+        .map((post) => Post.fromJson(post.data()))
+        .toList(growable: false);
+  }
+
+  Stream<QuerySnapshot> get postsStream async* {
+    yield* _firestore.collection('posts').snapshots();
+  }
+
   Future<Post> getPostById(String postId) async {
     final postJson = await getPostRefById(postId).get();
     return Post.fromJson(postJson.data() ?? {});

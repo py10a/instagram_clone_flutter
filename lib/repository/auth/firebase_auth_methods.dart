@@ -3,7 +3,8 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:instagram_clone_flutter/repository/auth/auth_methods.dart';
-import 'package:instagram_clone_flutter/repository/models/user.dart' as model;
+import 'package:instagram_clone_flutter/repository/models/models.dart'
+    as models;
 import 'package:instagram_clone_flutter/repository/storage/firebase_storage_methods.dart';
 
 final _auth = FirebaseAuth.instance;
@@ -21,11 +22,11 @@ class FirebaseAuthMethods implements AuthMethods {
   static final instance = FirebaseAuthMethods._();
   factory FirebaseAuthMethods() => instance;
 
-  Future<model.User?> get userData async {
+  Future<models.User?> get userData async {
     final snapshot =
         await _firestore.collection('users').doc(_auth.currentUser?.uid).get();
     if (snapshot.exists) {
-      return model.User.fromSnapshot(snapshot);
+      return models.User.fromSnapshot(snapshot);
     } else {
       signOut();
       return null;
@@ -80,7 +81,7 @@ class FirebaseAuthMethods implements AuthMethods {
           path: 'images/avatars/${credentials.user!.uid}',
           file: image,
         );
-        model.User user = model.User(
+        final user = models.User(
           uid: _auth.currentUser!.uid,
           email: email,
           username: username,

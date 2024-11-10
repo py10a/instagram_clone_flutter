@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram_clone_flutter/presentation/widgets/like_animation.dart';
+import 'package:instagram_clone_flutter/presentation/widgets/widgets.dart';
 import 'package:instagram_clone_flutter/providers/user_provider.dart';
-import 'package:instagram_clone_flutter/repository/models/post.dart';
-import 'package:instagram_clone_flutter/repository/models/user.dart' as model;
+import 'package:instagram_clone_flutter/repository/models/models.dart'
+    as models;
 import 'package:instagram_clone_flutter/repository/posts/firebase_post_methods.dart';
 import 'package:instagram_clone_flutter/utils/utils.dart';
 import 'package:provider/provider.dart';
@@ -18,140 +18,213 @@ class PostCard extends StatefulWidget {
     required this.post,
   });
 
-  final Post post;
+  final models.Post post;
 
   @override
   State<PostCard> createState() => _PostCardState();
 }
 
 class _PostCardState extends State<PostCard> {
-  model.User? user;
+  late models.User user;
   bool _likeAnimation = false;
 
-  Future<void> likePost() async {
+  Future<void> _likePost() async {
     await _firebasePostMethods.updateLikes(
       postId: widget.post.postId,
-      userId: user!.uid,
+      userId: user.uid,
     );
     setState(() => _likeAnimation = !_likeAnimation);
   }
 
   @override
   Widget build(BuildContext context) {
-    user = Provider.of<UserProvider>(context).user;
+    user = Provider.of<UserProvider>(context, listen: false).user!;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header of the post
-        ListTile(
-          contentPadding: _cardContentOnlyWidthPadding,
-          leading: CircleAvatar(
-            backgroundColor: Colors.grey[200],
-            foregroundImage: NetworkImage(widget.post.avatarUrl),
-          ),
-          title: Text(widget.post.username,
-              style: TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Text(getHumanReadableDate(widget.post.datePublished),
-              style: TextStyle(fontWeight: FontWeight.normal)),
-          trailing: IconButton(
-            icon: Icon(CupertinoIcons.ellipsis_vertical),
-            onPressed: () {},
-          ),
+        _PostHeader(post: widget.post),
+        _PostPhoto(
+          post: widget.post,
+          likePost: _likePost,
+          likeAnimation: _likeAnimation,
+          onAnimationEnd: () {
+            setState(() => _likeAnimation = !_likeAnimation);
+          },
         ),
-        // Photo of the post
-        GestureDetector(
-          onDoubleTap: () async => await likePost(),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              FadeInImage.memoryNetwork(
-                placeholder: kTransparentImage,
-                placeholderColor: Colors.grey[200],
-                placeholderFit: BoxFit.cover,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: 400,
-                image: NetworkImage(widget.post.postUrl).url,
-              ),
-              LikeAnimation(
-                isAnimating: _likeAnimation,
-                onEnd: () {
-                  setState(() => _likeAnimation = !_likeAnimation);
-                },
-              ),
-            ],
-          ),
-        ),
-        // Footer of the post
-        Row(
-          children: [
-            CupertinoButton(
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              onPressed: () => likePost(),
-              child: widget.post.likes.contains(user!.uid)
-                  ? Icon(CupertinoIcons.heart_fill, color: Colors.red[300])
-                  : Icon(CupertinoIcons.heart, color: Colors.black),
-            ),
-            CupertinoButton(
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              child: Icon(CupertinoIcons.chat_bubble),
-              onPressed: () {},
-            ),
-            CupertinoButton(
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              child: Icon(CupertinoIcons.paperplane),
-              onPressed: () {},
-            ),
-            Expanded(
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: CupertinoButton(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  child: Icon(CupertinoIcons.bookmark),
-                  onPressed: () {},
-                ),
-              ),
-            ),
-          ],
+        _PostActions(
+          post: widget.post,
+          user: user,
+          likePost: _likePost,
         ),
         Padding(
           padding: _cardContentOnlyWidthPadding,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('${widget.post.likes.length} likes',
-                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16)),
-              SizedBox(height: 8),
-              RichText(
-                maxLines: 3,
-                text: TextSpan(
-                  style: TextStyle(
-                    inherit: false,
-                    fontWeight: FontWeight.normal,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: widget.post.username,
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    TextSpan(text: ' '),
-                    TextSpan(text: widget.post.description),
-                  ],
-                ),
+              Text(
+                '${widget.post.likes.length} likes',
+                style:
+                    const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
               ),
-              SizedBox(height: 8),
-              Text('View all comments',
-                  style: TextStyle(color: Colors.grey, fontSize: 16)),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
+              _PostDescription(post: widget.post),
+              const SizedBox(height: 8),
+              const Text(
+                'View all comments',
+                style: TextStyle(color: Colors.grey, fontSize: 16),
+              ),
+              const SizedBox(height: 8),
               Divider(thickness: 0.5, color: Colors.grey[300]),
             ],
           ),
         ),
       ],
+    );
+  }
+}
+
+class _PostHeader extends StatelessWidget {
+  const _PostHeader({required this.post});
+
+  final models.Post post;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: _cardContentOnlyWidthPadding,
+      leading: CircleAvatar(
+        backgroundColor: Colors.grey[200],
+        foregroundImage: NetworkImage(post.avatarUrl),
+      ),
+      title: Text(
+        post.username,
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
+      subtitle: Text(
+        getHumanReadableDate(post.datePublished),
+        style: const TextStyle(fontWeight: FontWeight.normal),
+      ),
+      trailing: IconButton(
+        icon: const Icon(CupertinoIcons.ellipsis_vertical),
+        onPressed: () {},
+      ),
+    );
+  }
+}
+
+class _PostPhoto extends StatelessWidget {
+  const _PostPhoto({
+    required this.post,
+    required this.likePost,
+    required this.likeAnimation,
+    required this.onAnimationEnd,
+  });
+
+  final models.Post post;
+  final Future<void> Function() likePost;
+  final bool likeAnimation;
+  final VoidCallback onAnimationEnd;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onDoubleTap: () async => await likePost(),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          FadeInImage.memoryNetwork(
+            placeholder: kTransparentImage,
+            placeholderColor: Colors.grey[200],
+            placeholderFit: BoxFit.cover,
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: 400,
+            image: post.postUrl,
+          ),
+          LikeAnimation(
+            isAnimating: likeAnimation,
+            onEnd: onAnimationEnd,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PostActions extends StatelessWidget {
+  const _PostActions({
+    required this.post,
+    required this.user,
+    required this.likePost,
+  });
+
+  final models.Post post;
+  final models.User user;
+  final Future<void> Function() likePost;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        CupertinoButton(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          onPressed: () => likePost(),
+          child: post.likes.contains(user.uid)
+              ? Icon(CupertinoIcons.heart_fill, color: Colors.red[300])
+              : const Icon(CupertinoIcons.heart, color: Colors.black),
+        ),
+        CupertinoButton(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          child: const Icon(CupertinoIcons.chat_bubble),
+          onPressed: () {},
+        ),
+        CupertinoButton(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          child: const Icon(CupertinoIcons.paperplane),
+          onPressed: () {},
+        ),
+        Expanded(
+          child: Align(
+            alignment: Alignment.bottomRight,
+            child: CupertinoButton(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: const Icon(CupertinoIcons.bookmark),
+              onPressed: () {},
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PostDescription extends StatelessWidget {
+  const _PostDescription({required this.post});
+
+  final models.Post post;
+
+  @override
+  Widget build(BuildContext context) {
+    return RichText(
+      maxLines: 3,
+      text: TextSpan(
+        style: TextStyle(
+          inherit: false,
+          fontWeight: FontWeight.normal,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        children: [
+          TextSpan(
+            text: post.username,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const TextSpan(text: ' '),
+          TextSpan(text: post.description),
+        ],
+      ),
     );
   }
 }

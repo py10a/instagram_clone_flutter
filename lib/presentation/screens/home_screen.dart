@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram_clone_flutter/presentation/widgets/post_card.dart';
+import 'package:instagram_clone_flutter/presentation/widgets/widgets.dart';
+import 'package:instagram_clone_flutter/providers/post_provider.dart';
 import 'package:instagram_clone_flutter/providers/user_provider.dart';
-import 'package:instagram_clone_flutter/repository/models/post.dart';
-import 'package:instagram_clone_flutter/repository/models/user.dart' as model;
+import 'package:instagram_clone_flutter/repository/models/models.dart'
+    as models;
 import 'package:provider/provider.dart';
 
 final firestore = FirebaseFirestore.instance;
@@ -17,24 +18,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  model.User? user;
-  late Stream<QuerySnapshot> _postStream;
-
-  @override
-  void initState() {
-    super.initState();
-    user = Provider.of<UserProvider>(context, listen: false).user;
-    _postStream = firestore.collection('posts').snapshots();
-  }
-
-  void refreshStream() {
-    setState(() {
-      _postStream = firestore.collection('posts').snapshots();
-    });
-  }
+  late models.User user;
 
   @override
   Widget build(BuildContext context) {
+    user = Provider.of<UserProvider>(context, listen: false).user!;
+
     return Scaffold(
       appBar: AppBar(
         leadingWidth: 150,
@@ -58,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: StreamBuilder(
-        stream: _postStream,
+        stream: Provider.of<PostProvider>(context).postsStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -70,14 +59,15 @@ class _HomeScreenState extends State<HomeScreen> {
             child: ListView.builder(
               itemCount: postList.length,
               itemBuilder: (context, index) {
-                final post = Post.fromJson(
-                    postList[index].data() as Map<String, dynamic>);
+                final post = models.Post.fromJson(
+                  postList[index].data() as Map<String, dynamic>,
+                );
                 return PostCard(post: post);
               },
             ),
             onRefresh: () async {
               await Future.delayed(Duration(seconds: 2));
-              refreshStream();
+              ;
             },
           );
         },

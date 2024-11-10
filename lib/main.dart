@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone_flutter/firebase_options.dart';
 import 'package:instagram_clone_flutter/presentation/screens/screens.dart';
+import 'package:instagram_clone_flutter/providers/post_provider.dart';
 import 'package:instagram_clone_flutter/providers/user_provider.dart';
 import 'package:instagram_clone_flutter/responsive/responsive_layout_screen.dart';
 import 'package:instagram_clone_flutter/utils/themes.dart';
@@ -57,6 +58,7 @@ class InstagramClone extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => PostProvider()),
       ],
       child: MaterialApp(
         title: 'Instagram Clone',
