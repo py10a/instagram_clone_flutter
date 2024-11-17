@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:instagram_clone_flutter/presentation/screens/screens.dart';
 import 'package:instagram_clone_flutter/presentation/widgets/widgets.dart';
-import 'package:instagram_clone_flutter/repository/auth/firebase_auth_methods.dart';
-import 'package:instagram_clone_flutter/utils/utils.dart';
+import 'package:instagram_clone_flutter/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -25,24 +25,13 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void logIn() async {
-    setState(() {
-      _isLoading = true;
-    });
-    String res = await FirebaseAuthMethods.instance.signInWithEmailAndPassword(
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() => _isLoading = true);
+    await Provider.of<UserProvider>(context).signInWithEmailAndPassword(
       email: _emailController.text,
       password: _passwordController.text,
     );
-    FocusManager.instance.primaryFocus?.unfocus();
-    if (mounted) {
-      showSnackBar(
-        res,
-        context: context,
-        isError: res != 'success',
-      );
-    }
-    setState(() {
-      _isLoading = false;
-    });
+    setState(() => _isLoading = false);
   }
 
   void signUp() {

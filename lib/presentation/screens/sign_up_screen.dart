@@ -5,7 +5,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:instagram_clone_flutter/presentation/screens/screens.dart';
 import 'package:instagram_clone_flutter/presentation/widgets/widgets.dart';
 import 'package:instagram_clone_flutter/providers/user_provider.dart';
-import 'package:instagram_clone_flutter/repository/auth/firebase_auth_methods.dart';
 import 'package:instagram_clone_flutter/responsive/responsive_layout_screen.dart';
 import 'package:instagram_clone_flutter/utils/utils.dart';
 import 'package:provider/provider.dart';
@@ -40,20 +39,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void signUp(context) async {
-    setState(() {
-      _isSigningUp = true;
-    });
-    String response =
-        await FirebaseAuthMethods.instance.signUpWithEmailAndPassword(
-      email: _emailController.text,
+    setState(() => _isSigningUp = true);
+    FocusManager.instance.primaryFocus?.unfocus();
+    String response = await Provider.of<UserProvider>(context, listen: false)
+        .signUpWithEmailAndPassword(
       username: _usernameController.text,
+      email: _emailController.text,
       password: _passwordController.text,
-      image: _avatarImage ?? Uint8List(0),
+      avatarImage: _avatarImage,
     );
     if (response == 'success') {
-      _usernameController.clear();
-      _emailController.clear();
-      _passwordController.clear();
       Provider.of<UserProvider>(context, listen: false).refreshUser();
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
@@ -62,17 +57,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
       );
     }
-    if (mounted) {
-      showSnackBar(
-        response,
-        context: context,
-        isError: response != 'success',
-      );
-    }
-    FocusManager.instance.primaryFocus?.unfocus();
-    setState(() {
-      _isSigningUp = false;
-    });
+    setState(() => _isSigningUp = false);
   }
 
   void logIn() {
