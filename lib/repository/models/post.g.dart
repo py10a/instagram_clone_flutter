@@ -15,6 +15,7 @@ Post _$PostFromJson(Map<String, dynamic> json) => Post(
       description: json['description'] as String,
       likes: json['likes'] as List<dynamic>,
       datePublished: DateTime.parse(json['datePublished'] as String),
+      comments: json['comments'] as List<dynamic>,
     );
 
 Map<String, dynamic> _$PostToJson(Post instance) => <String, dynamic>{
@@ -26,4 +27,5 @@ Map<String, dynamic> _$PostToJson(Post instance) => <String, dynamic>{
       'description': instance.description,
       'likes': instance.likes,
       'datePublished': instance.datePublished.toIso8601String(),
+      'comments': instance.comments,
     };

@@ -28,6 +28,9 @@ class Post {
   @JsonKey(name: 'datePublished')
   final DateTime datePublished;
 
+  @JsonKey(name: 'comments')
+  final List comments;
+
   const Post({
     required this.uid,
     required this.postId,
@@ -37,6 +40,7 @@ class Post {
     required this.description,
     required this.likes,
     required this.datePublished,
+    required this.comments,
   });
 
   factory Post.fromJson(Map<String, dynamic> json) => _$PostFromJson(json);

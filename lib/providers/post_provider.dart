@@ -16,7 +16,7 @@ class PostProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future refreshPosts() async {
+  Future<void> refreshPosts() async {
     _posts = await _firebasePostMethods.posts;
     notifyListeners();
   }

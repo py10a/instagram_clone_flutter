@@ -41,6 +41,7 @@ class FirebasePostMethods implements PostMethods {
         description: description,
         likes: [],
         datePublished: DateTime.now(),
+        comments: [],
       );
       await getPostRefById(postId).set(post.toJson());
       return 'posts/$postId';
@@ -85,7 +86,11 @@ class FirebasePostMethods implements PostMethods {
     } else {
       likes.add(userId);
     }
-    await getPostRefById(postId).update({'likes': likes});
+    try {
+      await getPostRefById(postId).update({'likes': likes});
+    } catch (e) {
+      throw Exception('Failed to update likes: $e');
+    }
   }
 
   Future<List<Post>> get posts async {
@@ -97,6 +102,14 @@ class FirebasePostMethods implements PostMethods {
 
   Stream<QuerySnapshot> get postsStream async* {
     yield* _firestore.collection('posts').snapshots();
+  }
+
+  Stream<QuerySnapshot> getCommentsStream(String postId) async* {
+    yield* _firestore
+        .collection('posts')
+        .doc(postId)
+        .collection('comments')
+        .snapshots();
   }
 
   Future<Post> getPostById(String postId) async {

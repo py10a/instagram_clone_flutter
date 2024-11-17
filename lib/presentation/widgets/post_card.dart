@@ -5,6 +5,7 @@ import 'package:instagram_clone_flutter/providers/user_provider.dart';
 import 'package:instagram_clone_flutter/repository/models/models.dart'
     as models;
 import 'package:instagram_clone_flutter/repository/posts/firebase_post_methods.dart';
+import 'package:instagram_clone_flutter/utils/modals.dart';
 import 'package:instagram_clone_flutter/utils/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -25,21 +26,25 @@ class PostCard extends StatefulWidget {
 }
 
 class _PostCardState extends State<PostCard> {
-  late models.User user;
+  late models.User? user;
   bool _likeAnimation = false;
 
   Future<void> _likePost() async {
     await _firebasePostMethods.updateLikes(
       postId: widget.post.postId,
-      userId: user.uid,
+      userId: user!.uid,
     );
     setState(() => _likeAnimation = !_likeAnimation);
   }
 
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
     user = Provider.of<UserProvider>(context, listen: false).user!;
+    super.didChangeDependencies();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -56,7 +61,7 @@ class _PostCardState extends State<PostCard> {
         ),
         _PostActions(
           post: widget.post,
-          user: user,
+          user: user!,
           likePost: _likePost,
         ),
         Padding(
@@ -72,9 +77,12 @@ class _PostCardState extends State<PostCard> {
               const SizedBox(height: 8),
               _PostDescription(post: widget.post),
               const SizedBox(height: 8),
-              const Text(
-                'View all comments',
-                style: TextStyle(color: Colors.grey, fontSize: 16),
+              GestureDetector(
+                onTap: () => showDraggableModalBottomSheet(context),
+                child: const Text(
+                  'View all comments',
+                  style: TextStyle(color: Colors.grey, fontSize: 16),
+                ),
               ),
               const SizedBox(height: 8),
               Divider(thickness: 0.5, color: Colors.grey[300]),
@@ -171,15 +179,15 @@ class _PostActions extends StatelessWidget {
       children: [
         CupertinoButton(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          onPressed: () => likePost(),
+          onPressed: likePost,
           child: post.likes.contains(user.uid)
               ? Icon(CupertinoIcons.heart_fill, color: Colors.red[300])
               : const Icon(CupertinoIcons.heart, color: Colors.black),
         ),
         CupertinoButton(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          onPressed: () => showDraggableModalBottomSheet(context),
           child: const Icon(CupertinoIcons.chat_bubble),
-          onPressed: () {},
         ),
         CupertinoButton(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
