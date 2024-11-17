@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_clone_flutter/presentation/widgets/comments/comment_row.dart';
 import 'package:instagram_clone_flutter/repository/models/comment.dart';
 import 'package:instagram_clone_flutter/repository/posts/firebase_post_methods.dart';
 
@@ -35,6 +36,9 @@ class _CommentsModalState extends State<CommentsModal> {
             return const Center(child: Text('Something went wrong'));
           }
           final commentsList = snapshot.data!.docs;
+          if (commentsList.isEmpty) {
+            return const Center(child: Text('No comments yet.'));
+          }
           return ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -43,14 +47,7 @@ class _CommentsModalState extends State<CommentsModal> {
               final commentParsed =
                   commentsList[index].data() as Map<String, dynamic>;
               final commentModel = Comment.fromJson(commentParsed);
-              //
-              // TODO: Implement CommentRow
-              //
-              return CommentRow(
-                username: commentModel.username,
-                comment: commentModel.content,
-                avatarUrl: commentModel,
-              );
+              return CommentRow(commentModel: commentModel);
             },
           );
         });

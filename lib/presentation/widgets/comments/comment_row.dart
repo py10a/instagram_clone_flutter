@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:instagram_clone_flutter/repository/models/comment.dart';
 
 class CommentRow extends StatelessWidget {
   const CommentRow({
     super.key,
-    required this.username,
-    required this.comment,
-    required this.avatarUrl,
+    required this.commentModel,
   });
 
-  final String username;
-  final String comment;
-  final String avatarUrl;
+  final Comment commentModel;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +17,7 @@ class CommentRow extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 16,
-            backgroundImage: NetworkImage(avatarUrl),
+            backgroundImage: NetworkImage(commentModel.avatarUrl),
           ),
           const SizedBox(width: 16),
           Column(
@@ -29,7 +26,7 @@ class CommentRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                username,
+                commentModel.username,
                 style: Theme.of(context)
                     .textTheme
                     .titleSmall!
@@ -37,7 +34,7 @@ class CommentRow extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                comment,
+                commentModel.content,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],

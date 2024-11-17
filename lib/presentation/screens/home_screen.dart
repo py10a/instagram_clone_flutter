@@ -18,11 +18,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late models.User user;
+  late models.User? user;
 
   @override
   Widget build(BuildContext context) {
-    user = Provider.of<UserProvider>(context, listen: false).user!;
+    user = Provider.of<UserProvider>(context, listen: false).user;
 
     return Scaffold(
       appBar: AppBar(
@@ -67,7 +67,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             onRefresh: () async {
               await Future.delayed(Duration(seconds: 2));
-              ;
             },
           );
         },

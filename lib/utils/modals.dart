@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:instagram_clone_flutter/presentation/widgets/comments/comment_modal.dart';
 
-void showDraggableModalBottomSheet(BuildContext context, [Object? arguments]) {
+void showDraggableModalBottomSheet(BuildContext context, String postId) {
   showModalBottomSheet(
     context: context,
     showDragHandle: true,
@@ -14,7 +14,10 @@ void showDraggableModalBottomSheet(BuildContext context, [Object? arguments]) {
         maxChildSize: 0.9,
         snap: true,
         builder: (context, scrollController) {
-          return CommentsModal(scrollController: scrollController);
+          return CommentsModal(
+            scrollController: scrollController,
+            postId: postId,
+          );
         },
       );
     },

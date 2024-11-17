@@ -78,7 +78,8 @@ class _PostCardState extends State<PostCard> {
               _PostDescription(post: widget.post),
               const SizedBox(height: 8),
               GestureDetector(
-                onTap: () => showDraggableModalBottomSheet(context),
+                onTap: () =>
+                    showDraggableModalBottomSheet(context, widget.post.postId),
                 child: const Text(
                   'View all comments',
                   style: TextStyle(color: Colors.grey, fontSize: 16),
@@ -186,7 +187,7 @@ class _PostActions extends StatelessWidget {
         ),
         CupertinoButton(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          onPressed: () => showDraggableModalBottomSheet(context),
+          onPressed: () => showDraggableModalBottomSheet(context, post.postId),
           child: const Icon(CupertinoIcons.chat_bubble),
         ),
         CupertinoButton(
