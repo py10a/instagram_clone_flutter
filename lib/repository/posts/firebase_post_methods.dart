@@ -63,8 +63,11 @@ class FirebasePostMethods implements PostMethods, ILikeable, ICommentable {
 
   @override
   Future<void> deletePost({required String id}) async {
-    // TODO: implement deletePost
-    throw UnimplementedError();
+    try {
+      await getPostRefById(id).delete();
+    } catch (e) {
+      throw Exception('Failed to delete post: $e');
+    }
   }
 
   @override

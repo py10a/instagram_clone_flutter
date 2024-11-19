@@ -116,9 +116,41 @@ class _PostHeader extends StatelessWidget {
         getHumanReadableDate(post.datePublished),
         style: const TextStyle(fontWeight: FontWeight.normal),
       ),
-      trailing: IconButton(
+      trailing: PopupMenuButton(
         icon: const Icon(CupertinoIcons.ellipsis_vertical),
-        onPressed: () {},
+        itemBuilder: (context) {
+          return [
+            PopupMenuItem(
+              value: 'delete',
+              child: const Text('Delete this post'),
+              onTap: () async {
+                showGeneralDialog(
+                    context: context,
+                    pageBuilder: (context, _, __) {
+                      return AlertDialog(
+                        title: const Text('Delete Post'),
+                        content: const Text(
+                            'Are you sure you want to delete this post?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              await _firebasePostMethods.deletePost(
+                                  id: post.postId);
+                            },
+                            child: const Text('Delete'),
+                          ),
+                        ],
+                      );
+                    });
+              },
+            ),
+          ];
+        },
       ),
     );
   }
