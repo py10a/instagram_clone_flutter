@@ -1,8 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone_flutter/presentation/widgets/comments/comment_row.dart';
+import 'package:instagram_clone_flutter/providers/user_provider.dart';
 import 'package:instagram_clone_flutter/repository/models/comment.dart';
+import 'package:instagram_clone_flutter/repository/models/user.dart' as models;
 import 'package:instagram_clone_flutter/repository/posts/firebase_post_methods.dart';
+import 'package:provider/provider.dart';
+
+final _firebasePostMethods = FirebasePostMethods.instance;
 
 class CommentsModal extends StatefulWidget {
   const CommentsModal({
@@ -19,6 +24,28 @@ class CommentsModal extends StatefulWidget {
 }
 
 class _CommentsModalState extends State<CommentsModal> {
+  final _commentController = TextEditingController();
+  bool _isSending = false;
+  late final models.User user;
+
+  @override
+  void didChangeDependencies() {
+    user = Provider.of<UserProvider>(context, listen: false).user!;
+    super.didChangeDependencies();
+  }
+
+  void sendComment() async {
+    setState(() => _isSending = true);
+    await _firebasePostMethods.createComment(
+      postId: widget.postId,
+      username: user.username,
+      avatarUrl: user.imageUrl,
+      content: _commentController.text,
+    );
+    _commentController.clear();
+    setState(() => _isSending = false);
+  }
+
   @override
   Widget build(BuildContext context) {
     final divider = Divider(
@@ -27,7 +54,7 @@ class _CommentsModalState extends State<CommentsModal> {
       thickness: 0.5,
     );
     var listView = StreamBuilder(
-        stream: FirebasePostMethods.instance.getCommentsStream(widget.postId),
+        stream: _firebasePostMethods.getCommentsStream(widget.postId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -72,19 +99,28 @@ class _CommentsModalState extends State<CommentsModal> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
-                CircleAvatar(radius: 20),
+                CircleAvatar(
+                  radius: 20,
+                  foregroundImage: NetworkImage(user.imageUrl),
+                ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: TextField(
+                    controller: _commentController,
                     decoration: InputDecoration(
-                      hintText: 'Add a comment...',
+                      hintText: 'Add a comment as ${user.username}...',
                       border: OutlineInputBorder(),
                     ),
                   ),
                 ),
                 CupertinoButton(
-                  onPressed: () {},
-                  child: Icon(CupertinoIcons.paperplane),
+                  onPressed: sendComment,
+                  child: _isSending
+                      ? CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation(Colors.black),
+                        )
+                      : Icon(CupertinoIcons.paperplane),
                 ),
               ],
             ),

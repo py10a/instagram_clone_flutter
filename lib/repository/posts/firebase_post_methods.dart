@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:instagram_clone_flutter/repository/models/comment.dart';
 import 'package:instagram_clone_flutter/repository/models/post.dart';
 import 'package:instagram_clone_flutter/repository/posts/post_methods.dart';
 import 'package:instagram_clone_flutter/repository/storage/firebase_storage_methods.dart';
@@ -11,7 +12,7 @@ final _storageMethods = FirebaseStorageMethods.instance;
 final _firestore = FirebaseFirestore.instance;
 final _auth = FirebaseAuth.instance;
 
-class FirebasePostMethods implements PostMethods {
+class FirebasePostMethods implements PostMethods, ILikeable, ICommentable {
   FirebasePostMethods._();
   static final instance = FirebasePostMethods._();
   factory FirebasePostMethods() => instance;
@@ -19,6 +20,16 @@ class FirebasePostMethods implements PostMethods {
   DocumentReference<Map<String, dynamic>> getPostRefById(String postId) {
     return _firestore.collection('posts').doc(postId);
   }
+
+  @override
+  Future<Post> getPostById(String postId) async {
+    final postJson = await getPostRefById(postId).get();
+    return Post.fromJson(postJson.data() ?? {});
+  }
+
+  // ---------------------------
+  // POST FEATURES
+  // ---------------------------
 
   @override
   Future<String> createPost({
@@ -67,6 +78,21 @@ class FirebasePostMethods implements PostMethods {
     throw UnimplementedError();
   }
 
+  Future<List<Post>> get posts async {
+    final postsJson = await _firestore.collection('posts').get();
+    return postsJson.docs
+        .map((post) => Post.fromJson(post.data()))
+        .toList(growable: false);
+  }
+
+  Stream<QuerySnapshot> get postsStream async* {
+    yield* _firestore.collection('posts').snapshots();
+  }
+
+  // ---------------------------
+  // LIKE FEATURE
+  // ---------------------------
+
   Future<bool> isLikedByUser({
     required String postId,
     required String userId,
@@ -75,6 +101,7 @@ class FirebasePostMethods implements PostMethods {
     return post.likes.contains(userId);
   }
 
+  @override
   Future<void> updateLikes({
     required String postId,
     required String userId,
@@ -93,16 +120,9 @@ class FirebasePostMethods implements PostMethods {
     }
   }
 
-  Future<List<Post>> get posts async {
-    final postsJson = await _firestore.collection('posts').get();
-    return postsJson.docs
-        .map((post) => Post.fromJson(post.data()))
-        .toList(growable: false);
-  }
-
-  Stream<QuerySnapshot> get postsStream async* {
-    yield* _firestore.collection('posts').snapshots();
-  }
+  // ---------------------------
+  // COMMENTS FEATURE
+  // ---------------------------
 
   Stream<QuerySnapshot> getCommentsStream(String postId) async* {
     yield* _firestore
@@ -112,8 +132,40 @@ class FirebasePostMethods implements PostMethods {
         .snapshots();
   }
 
-  Future<Post> getPostById(String postId) async {
-    final postJson = await getPostRefById(postId).get();
-    return Post.fromJson(postJson.data() ?? {});
+  @override
+  Future<String> createComment({
+    required String postId,
+    required String username,
+    required String avatarUrl,
+    required String content,
+  }) async {
+    try {
+      final commentId = const Uuid().v1();
+      final comment = Comment(
+        id: commentId,
+        postId: postId,
+        avatarUrl: avatarUrl,
+        username: username,
+        content: content,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+      await getPostRefById(postId)
+          .collection('comments')
+          .doc(commentId)
+          .set(comment.toJson());
+      return 'Comment created successfully';
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  @override
+  Future deleteComment({
+    required String postId,
+    required String commentId,
+  }) {
+    // TODO: implement deleteComment
+    throw UnimplementedError();
   }
 }
