@@ -38,6 +38,7 @@ class _SearchScreenState extends State<SearchScreen> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             child: CupertinoSearchTextField(
+              keyboardType: TextInputType.name,
               controller: _searchController,
               itemColor: Theme.of(context).colorScheme.primary,
               onChanged: (value) {
