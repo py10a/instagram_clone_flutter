@@ -1,4 +1,5 @@
 export 'buttons/primary_button.dart';
+export 'buttons/profile_button.dart';
 export 'buttons/secondary_button.dart';
 export 'like_animation.dart';
 export 'post_card.dart';

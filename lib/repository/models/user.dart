@@ -32,6 +32,17 @@ class User {
     required this.following,
   });
 
+  factory User.origin() {
+    return User(
+      uid: '',
+      email: '',
+      username: '',
+      imageUrl: '',
+      followers: [],
+      following: [],
+    );
+  }
+
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 
   static User fromSnapshot(DocumentSnapshot snapshot) {

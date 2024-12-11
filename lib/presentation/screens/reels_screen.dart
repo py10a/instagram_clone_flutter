@@ -52,10 +52,6 @@ class _ReelsScreenState extends State<ReelsScreen> {
                       fit: BoxFit.cover,
                     ),
                   );
-                  return Image.network(
-                    post['postUrl'],
-                    fit: BoxFit.cover,
-                  );
                 },
               ),
             );
