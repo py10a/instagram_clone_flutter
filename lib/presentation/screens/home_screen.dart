@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone_flutter/presentation/widgets/widgets.dart';
 import 'package:instagram_clone_flutter/providers/post_provider.dart';
-import 'package:instagram_clone_flutter/providers/user_provider.dart';
 import 'package:instagram_clone_flutter/repository/models/models.dart'
     as models;
 import 'package:provider/provider.dart';
@@ -18,12 +17,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late models.User? user;
+  Future<void> _onRefresh() async {
+    await Future.delayed(Duration(seconds: 2));
+  }
 
   @override
   Widget build(BuildContext context) {
-    user = Provider.of<UserProvider>(context, listen: false).user;
-
     return Scaffold(
       appBar: AppBar(
         leadingWidth: 150,
@@ -56,6 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
           return RefreshIndicator(
             displacement: 0,
             strokeWidth: 2,
+            onRefresh: _onRefresh,
             child: ListView.builder(
               itemCount: postList.length,
               itemBuilder: (context, index) {
@@ -65,9 +65,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 return PostCard(post: post);
               },
             ),
-            onRefresh: () async {
-              await Future.delayed(Duration(seconds: 2));
-            },
           );
         },
       ),

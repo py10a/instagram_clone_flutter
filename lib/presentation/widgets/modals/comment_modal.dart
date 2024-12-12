@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram_clone_flutter/presentation/widgets/comments/comment_row.dart';
+import 'package:instagram_clone_flutter/presentation/widgets/modals/comment_row.dart';
 import 'package:instagram_clone_flutter/providers/user_provider.dart';
 import 'package:instagram_clone_flutter/repository/models/comment.dart';
 import 'package:instagram_clone_flutter/repository/models/user.dart' as models;

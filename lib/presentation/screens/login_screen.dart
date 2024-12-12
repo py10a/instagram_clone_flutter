@@ -27,7 +27,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void logIn() async {
     FocusManager.instance.primaryFocus?.unfocus();
     setState(() => _isLoading = true);
-    await Provider.of<UserProvider>(context).signInWithEmailAndPassword(
+    await Provider.of<UserProvider>(context, listen: false)
+        .signInWithEmailAndPassword(
       email: _emailController.text,
       password: _passwordController.text,
     );

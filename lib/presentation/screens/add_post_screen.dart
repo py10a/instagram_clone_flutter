@@ -1,12 +1,15 @@
 import 'dart:typed_data';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagram_clone_flutter/presentation/screens/screens.dart';
+import 'package:instagram_clone_flutter/providers/user_provider.dart';
+import 'package:instagram_clone_flutter/repository/models/models.dart'
+    as models;
 import 'package:instagram_clone_flutter/repository/posts/firebase_post_methods.dart';
 import 'package:instagram_clone_flutter/responsive/responsive_layout_screen.dart';
 import 'package:instagram_clone_flutter/utils/utils.dart';
+import 'package:provider/provider.dart';
 
 class AddPostScreen extends StatefulWidget {
   const AddPostScreen({
@@ -19,10 +22,10 @@ class AddPostScreen extends StatefulWidget {
 
 class _AddPostScreenState extends State<AddPostScreen> {
   final _firebasePostMethods = FirebasePostMethods.instance;
-  final _firebaseAuth = FirebaseAuth.instance;
   final _descriptionController = TextEditingController();
   Uint8List? _image;
   bool _isUploading = false;
+  models.User user = models.User.origin();
 
   Future<String> postImage(BuildContext context) async {
     if (_image == null) {
@@ -37,9 +40,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
       _isUploading = true;
     });
     final pathToPost = await _firebasePostMethods.createPost(
-      id: _firebaseAuth.currentUser!.uid,
-      avatarUrl: _firebaseAuth.currentUser!.photoURL!,
-      username: _firebaseAuth.currentUser!.displayName!,
+      id: user.uid,
+      avatarUrl: user.imageUrl,
+      username: user.username,
       description: _descriptionController.text,
       postImage: _image!,
     );
@@ -95,6 +98,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
   @override
   Widget build(BuildContext context) {
+    user = Provider.of<UserProvider>(context).user!;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,

@@ -4,6 +4,7 @@ import 'package:instagram_clone_flutter/presentation/widgets/buttons/profile_but
 import 'package:instagram_clone_flutter/repository/auth/firebase_auth_methods.dart';
 import 'package:instagram_clone_flutter/repository/models/models.dart'
     as models;
+import 'package:instagram_clone_flutter/utils/modals.dart';
 
 final firebaseAuthMethods = FirebaseAuthMethods.instance;
 
@@ -25,60 +26,40 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   models.User user = models.User.origin();
   List<models.Post> posts = [];
-  List<String> followers = [];
-  List<String> following = [];
+  List<dynamic> followers = [];
+  List<dynamic> following = [];
   bool isFollowing = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _getFollowers();
-    _getFollowing();
-    _getPosts();
-    _isFollowing();
-    _getUser();
-  }
 
   void _isFollowing() {
     isFollowing = followers.contains(widget.uid);
   }
 
-  void _getUser() async {
-    final userSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.uid)
-        .get();
-    final userData = userSnapshot.data()!;
-    user = models.User.fromJson(userData);
-  }
-
-  void _getFollowing() async {
+  Future<void> _getUser() async {
     try {
-      final followingSnapshot = await FirebaseFirestore.instance
+      final userSnapshot = await FirebaseFirestore.instance
           .collection('users')
           .doc(widget.uid)
-          .collection('following')
           .get();
-      following = followingSnapshot.docs.isNotEmpty
-          ? followingSnapshot.docs.map((e) => e.id).toList()
-          : [];
+      final userData = userSnapshot.data()!;
+      user = models.User.fromJson(userData);
+      await _getPosts();
+      _getFollowers();
+      _getFollowing();
+      _isFollowing();
     } catch (e) {
       print(e);
     }
   }
 
-  void _getFollowers() async {
-    final followersSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.uid)
-        .collection('followers')
-        .get();
-    followers = followersSnapshot.docs.isNotEmpty
-        ? followersSnapshot.docs.map((e) => e.id).toList()
-        : [];
+  void _getFollowing() {
+    following = user.following;
   }
 
-  void _getPosts() async {
+  void _getFollowers() {
+    followers = user.followers;
+  }
+
+  Future<void> _getPosts() async {
     final postsSnapshot = await FirebaseFirestore.instance
         .collection('posts')
         .where('uid', isEqualTo: widget.uid)
@@ -92,8 +73,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await firebaseAuthMethods.signOut();
   }
 
-  @override
-  Widget build(BuildContext context) {
+  void tapEditProfile() {
+    // TODO: Implement tapEditProfile
+  }
+
+  void tapSettings() {
+    showProfileModal(context, onLogOut: _signOut);
+  }
+
+  Widget _buildProfile() {
     return Scaffold(
       appBar: AppBar(
         leadingWidth: 150,
@@ -105,52 +93,96 @@ class _ProfileScreenState extends State<ProfileScreen> {
               .headlineSmall!
               .copyWith(fontWeight: FontWeight.bold),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: tapSettings,
+          ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: NetworkImage(user.imageUrl),
-                ),
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      _buildProfileStat('Posts', posts.length),
-                      _buildProfileStat('Followers', followers.length),
-                      _buildProfileStat('Following', following.length),
-                    ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundImage: NetworkImage(user.imageUrl),
                   ),
-                )
-              ],
-            ),
-            SizedBox(height: 16),
-            Text(
-              user.username,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            SizedBox(height: 8),
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Expanded(
-                  child: ProfileButton(
-                    onPressed: () {},
-                    child: Text('Edit Profile'),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        _buildProfileStat('Posts', posts.length),
+                        _buildProfileStat('Followers', followers.length),
+                        _buildProfileStat('Following', following.length),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              SizedBox(height: 16),
+              Text(
+                user.username,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Expanded(
+                    child: ProfileButton(
+                      onPressed: () {},
+                      child: Text('Edit Profile'),
+                    ),
                   ),
-                ),
-              ],
-            )
-          ],
+                ],
+              ),
+              SizedBox(height: 32),
+              posts.isEmpty
+                  ? const Center(child: Text('No posts yet'))
+                  : GridView.builder(
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: posts.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final post = posts[index];
+                        return GridTile(
+                          child: Image.network(
+                            post.postUrl,
+                            fit: BoxFit.cover,
+                          ),
+                        );
+                      },
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 4,
+                        mainAxisSpacing: 4,
+                      ),
+                    ),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _getUser(),
+      builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        return _buildProfile();
+      },
     );
   }
 
