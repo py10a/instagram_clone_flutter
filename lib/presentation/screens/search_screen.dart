@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_clone_flutter/presentation/screens/screens.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({
@@ -70,9 +71,19 @@ class _SearchScreenState extends State<SearchScreen> {
             itemBuilder: (context, index) {
               final user = users[index];
               return ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: NetworkImage(
-                    user['imageUrl'],
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ProfileScreen(
+                        uid: user['uid'],
+                      ),
+                    ),
+                  );
+                },
+                leading: Hero(
+                  tag: user['uid'],
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(user['imageUrl']),
                   ),
                 ),
                 title: Text(

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone_flutter/presentation/widgets/buttons/profile_button.dart';
 import 'package:instagram_clone_flutter/repository/auth/firebase_auth_methods.dart';
@@ -20,18 +21,20 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-//
-// TODO: Implement the _ProfileScreenState. Come up with the implementation details.
-//
 class _ProfileScreenState extends State<ProfileScreen> {
   models.User user = models.User.origin();
   List<models.Post> posts = [];
   List<dynamic> followers = [];
   List<dynamic> following = [];
   bool isFollowing = false;
+  bool isCurrentUser = false;
 
   void _isFollowing() {
     isFollowing = followers.contains(widget.uid);
+  }
+
+  void _isCurrentUser() {
+    isCurrentUser = FirebaseAuth.instance.currentUser!.uid == widget.uid;
   }
 
   Future<void> _getUser() async {
@@ -43,6 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final userData = userSnapshot.data()!;
       user = models.User.fromJson(userData);
       await _getPosts();
+      _isCurrentUser();
       _getFollowers();
       _getFollowing();
       _isFollowing();
@@ -60,20 +64,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _getPosts() async {
-    final postsSnapshot = await FirebaseFirestore.instance
-        .collection('posts')
-        .where('uid', isEqualTo: widget.uid)
-        .get();
-    posts = postsSnapshot.docs.isNotEmpty
-        ? postsSnapshot.docs.map((e) => models.Post.fromJson(e.data())).toList()
-        : [];
+    try {
+      final postsSnapshot = await FirebaseFirestore.instance
+          .collection('posts')
+          .where('uid', isEqualTo: widget.uid)
+          .get();
+      posts = postsSnapshot.docs.isNotEmpty
+          ? postsSnapshot.docs
+              .map((e) => models.Post.fromJson(e.data()))
+              .toList()
+          : [];
+    } catch (e) {
+      print(e);
+    }
   }
 
   void _signOut() async {
     await firebaseAuthMethods.signOut();
   }
 
-  void tapEditProfile() {
+  // Whether to show the follow button or the message button
+  void tapProfileButton() {
     // TODO: Implement tapEditProfile
   }
 
@@ -109,9 +120,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               Row(
                 children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundImage: NetworkImage(user.imageUrl),
+                  Hero(
+                    tag: user.uid,
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundImage: NetworkImage(user.imageUrl),
+                    ),
                   ),
                   Expanded(
                     child: Row(
@@ -136,10 +150,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Expanded(
-                    child: ProfileButton(
-                      onPressed: () {},
-                      child: Text('Edit Profile'),
-                    ),
+                    child: isCurrentUser
+                        ? ProfileEditButton(
+                            onPressed: tapProfileButton,
+                            child: const Text('Edit Profile'),
+                          )
+                        : ProfileFollowButton(
+                            isFollowing: isFollowing,
+                            onPressed: tapProfileButton,
+                          ),
                   ),
                 ],
               ),

@@ -38,13 +38,9 @@ class _PostCardState extends State<PostCard> {
   }
 
   @override
-  void didChangeDependencies() {
-    user = Provider.of<UserProvider>(context, listen: false).user!;
-    super.didChangeDependencies();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    user = Provider.of<UserProvider>(context, listen: false).user!;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
