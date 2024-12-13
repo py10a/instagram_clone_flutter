@@ -31,11 +31,13 @@ class ProfileFollowButton extends StatelessWidget {
   const ProfileFollowButton({
     super.key,
     required this.onPressed,
+    required this.child,
     this.isFollowing = false,
   });
 
   final VoidCallback onPressed;
   final bool isFollowing;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
@@ -51,9 +53,15 @@ class ProfileFollowButton extends StatelessWidget {
             : Theme.of(context).colorScheme.primaryContainer,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
+          side: isFollowing
+              ? BorderSide(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  width: 1,
+                )
+              : BorderSide.none,
         ),
       ),
-      child: isFollowing ? const Text('Following') : const Text('Follow'),
+      child: child,
     );
   }
 }

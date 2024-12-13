@@ -5,6 +5,7 @@ import 'package:instagram_clone_flutter/presentation/widgets/buttons/profile_but
 import 'package:instagram_clone_flutter/repository/auth/firebase_auth_methods.dart';
 import 'package:instagram_clone_flutter/repository/models/models.dart'
     as models;
+import 'package:instagram_clone_flutter/repository/user/firebase_user_methods.dart';
 import 'package:instagram_clone_flutter/utils/modals.dart';
 
 final firebaseAuthMethods = FirebaseAuthMethods.instance;
@@ -83,9 +84,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await firebaseAuthMethods.signOut();
   }
 
-  // Whether to show the follow button or the message button
-  void tapProfileButton() {
-    // TODO: Implement tapEditProfile
+  void tapEditButton() {
+    // TODO
+  }
+
+  void tapFollowUnfollowButton() async {
+    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    final userId = user.uid;
+    if (isFollowing) {
+      await FirebaseUserMethods.instance.unfollowUser(
+        currentUserId: currentUserId,
+        userId: userId,
+      );
+    } else {
+      await FirebaseUserMethods.instance.followUser(
+        currentUserId: currentUserId,
+        userId: userId,
+      );
+    }
+    setState(() {
+      isFollowing = !isFollowing;
+    });
   }
 
   void tapSettings() {
@@ -152,12 +171,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Expanded(
                     child: isCurrentUser
                         ? ProfileEditButton(
-                            onPressed: tapProfileButton,
+                            onPressed: tapEditButton,
                             child: const Text('Edit Profile'),
                           )
                         : ProfileFollowButton(
                             isFollowing: isFollowing,
-                            onPressed: tapProfileButton,
+                            onPressed: tapFollowUnfollowButton,
+                            child: isFollowing
+                                ? const Text('Following')
+                                : const Text('Follow'),
                           ),
                   ),
                 ],
