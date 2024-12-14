@@ -168,14 +168,17 @@ class _PostPhoto extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          FadeInImage.memoryNetwork(
-            placeholder: kTransparentImage,
-            placeholderColor: Colors.grey[200],
-            placeholderFit: BoxFit.cover,
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: 400,
-            image: post.postUrl,
+          Hero(
+            tag: post.postUrl,
+            child: FadeInImage.memoryNetwork(
+              placeholder: kTransparentImage,
+              placeholderColor: Colors.grey[200],
+              placeholderFit: BoxFit.cover,
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: 400,
+              image: post.postUrl,
+            ),
           ),
           LikeAnimation(
             isAnimating: likeAnimation,

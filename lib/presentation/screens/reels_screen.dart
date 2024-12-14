@@ -3,6 +3,11 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:instagram_clone_flutter/presentation/widgets/post_card.dart';
+import 'package:instagram_clone_flutter/providers/user_provider.dart';
+import 'package:instagram_clone_flutter/repository/models/models.dart'
+    as models;
+import 'package:provider/provider.dart';
 
 final randomizer = Random();
 
@@ -47,9 +52,32 @@ class _ReelsScreenState extends State<ReelsScreen> {
                   return StaggeredGridTile.count(
                     crossAxisCellCount: (index % 7 == 0) ? 2 : 1,
                     mainAxisCellCount: (index % 7 == 0) ? 2 : 1,
-                    child: Image.network(
-                      post['postUrl'],
-                      fit: BoxFit.cover,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => Scaffold(
+                              appBar: AppBar(),
+                              body: SafeArea(
+                                child: PostCard(
+                                  post: models.Post.fromJson(post.data()),
+                                  currentUser: Provider.of<UserProvider>(
+                                    context,
+                                    listen: false,
+                                  ).user!,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      child: Hero(
+                        tag: post['postUrl'],
+                        child: Image.network(
+                          post['postUrl'],
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                   );
                 },

@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram_clone_flutter/presentation/widgets/buttons/profile_button.dart';
+import 'package:instagram_clone_flutter/presentation/widgets/widgets.dart';
+import 'package:instagram_clone_flutter/providers/user_provider.dart';
 import 'package:instagram_clone_flutter/repository/auth/firebase_auth_methods.dart';
 import 'package:instagram_clone_flutter/repository/models/models.dart'
     as models;
 import 'package:instagram_clone_flutter/repository/user/firebase_user_methods.dart';
 import 'package:instagram_clone_flutter/utils/modals.dart';
+import 'package:provider/provider.dart';
 
 final firebaseAuthMethods = FirebaseAuthMethods.instance;
 
@@ -175,10 +177,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     itemCount: posts.length,
                     itemBuilder: (BuildContext context, int index) {
                       final post = posts[index];
-                      return GridTile(
-                        child: Image.network(
-                          post.postUrl,
-                          fit: BoxFit.cover,
+
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => Scaffold(
+                                appBar: AppBar(),
+                                body: SafeArea(
+                                  child: PostCard(
+                                    post: post,
+                                    currentUser: Provider.of<UserProvider>(
+                                      context,
+                                      listen: false,
+                                    ).user!,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        child: Hero(
+                          tag: post.postUrl,
+                          child: GridTile(
+                            child: Image.network(
+                              post.postUrl,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
                       );
                     },
