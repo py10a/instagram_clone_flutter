@@ -1,11 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:instagram_clone_flutter/presentation/widgets/modals/comment_modal.dart';
 import 'package:instagram_clone_flutter/presentation/widgets/modals/profile_modal.dart';
 
-void _showModal(
+Future<void> _showModal(
   BuildContext context,
   Widget Function(BuildContext context, ScrollController controller) builder,
 ) {
+  Completer completer = Completer<void>();
   showModalBottomSheet(
     context: context,
     showDragHandle: true,
@@ -20,6 +23,7 @@ void _showModal(
           builder: builder);
     },
   );
+  return completer.future;
 }
 
 void showCommentsModal(BuildContext context, String postId) {
@@ -31,8 +35,11 @@ void showCommentsModal(BuildContext context, String postId) {
   });
 }
 
-void showProfileModal(BuildContext context, {required VoidCallback onLogOut}) {
-  _showModal(context, (context, scrollController) {
+Future<void> showProfileModal(
+  BuildContext context, {
+  required VoidCallback onLogOut,
+}) async {
+  await _showModal(context, (context, scrollController) {
     return ProfileModal(
       scrollController: scrollController,
       onLogOut: onLogOut,

@@ -43,7 +43,7 @@ class _PostCardState extends State<PostCard> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _PostHeader(post: widget.post),
+        _PostHeader(post: widget.post, currentUser: widget.currentUser),
         _PostPhoto(
           post: widget.post,
           likePost: _likePost,
@@ -88,9 +88,13 @@ class _PostCardState extends State<PostCard> {
 }
 
 class _PostHeader extends StatelessWidget {
-  const _PostHeader({required this.post});
+  const _PostHeader({
+    required this.post,
+    required this.currentUser,
+  });
 
   final models.Post post;
+  final models.User currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -112,35 +116,41 @@ class _PostHeader extends StatelessWidget {
         icon: const Icon(CupertinoIcons.ellipsis_vertical),
         itemBuilder: (context) {
           return [
-            PopupMenuItem(
-              value: 'delete',
-              child: const Text('Delete this post'),
-              onTap: () async {
-                showGeneralDialog(
-                    context: context,
-                    pageBuilder: (context, _, __) {
-                      return AlertDialog(
-                        title: const Text('Delete Post'),
-                        content: const Text(
-                            'Are you sure you want to delete this post?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('Cancel'),
-                          ),
-                          TextButton(
-                            onPressed: () async {
-                              Navigator.pop(context);
-                              await _firebasePostMethods.deletePost(
-                                  id: post.postId);
-                            },
-                            child: const Text('Delete'),
-                          ),
-                        ],
-                      );
-                    });
-              },
-            ),
+            currentUser.username == post.username
+                ? PopupMenuItem(
+                    value: 'delete',
+                    child: const Text('Delete this post'),
+                    onTap: () async {
+                      showGeneralDialog(
+                          context: context,
+                          pageBuilder: (context, _, __) {
+                            return AlertDialog(
+                              title: const Text('Delete Post'),
+                              content: const Text(
+                                  'Are you sure you want to delete this post?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                    await _firebasePostMethods.deletePost(
+                                        id: post.postId);
+                                  },
+                                  child: const Text('Delete'),
+                                ),
+                              ],
+                            );
+                          });
+                    },
+                  )
+                : PopupMenuItem(
+                    value: 'report',
+                    child: const Text('Report this post'),
+                    onTap: () {},
+                  ),
           ];
         },
       ),

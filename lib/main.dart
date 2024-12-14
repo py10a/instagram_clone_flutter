@@ -66,7 +66,7 @@ class InstagramClone extends StatelessWidget {
         darkTheme: darkTheme,
         themeMode: ThemeMode.system,
         home: StreamBuilder<User?>(
-          stream: FirebaseAuth.instance.idTokenChanges(),
+          stream: FirebaseAuth.instance.userChanges(),
           builder: buildContent,
         ),
       ),

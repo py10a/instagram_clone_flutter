@@ -82,8 +82,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void _signOut() async {
+  Future<void> _signOut(BuildContext context) async {
     await firebaseAuthMethods.signOut();
+    if (context.mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   void tapEditButton() {
@@ -109,8 +112,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  void tapSettings() {
-    showProfileModal(context, onLogOut: _signOut);
+  Future<void> tapSettings(BuildContext context) async {
+    if (isCurrentUser) {
+      await showProfileModal(
+        context,
+        onLogOut: () async => await _signOut(context),
+      );
+    } else {
+      // TODO
+    }
   }
 
   Widget _buildProfile() {
@@ -236,7 +246,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.menu),
-            onPressed: tapSettings,
+            onPressed: () async => await tapSettings(context),
           ),
         ],
       ),
