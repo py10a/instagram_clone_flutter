@@ -1,13 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone_flutter/presentation/widgets/widgets.dart';
-import 'package:instagram_clone_flutter/providers/user_provider.dart';
 import 'package:instagram_clone_flutter/repository/models/models.dart'
     as models;
 import 'package:instagram_clone_flutter/repository/posts/firebase_post_methods.dart';
 import 'package:instagram_clone_flutter/utils/modals.dart';
 import 'package:instagram_clone_flutter/utils/utils.dart';
-import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 const _cardContentOnlyWidthPadding = EdgeInsets.symmetric(horizontal: 16);
@@ -17,30 +15,29 @@ class PostCard extends StatefulWidget {
   const PostCard({
     super.key,
     required this.post,
+    required this.currentUser,
   });
 
   final models.Post post;
+  final models.User currentUser;
 
   @override
   State<PostCard> createState() => _PostCardState();
 }
 
 class _PostCardState extends State<PostCard> {
-  late models.User? user;
   bool _likeAnimation = false;
 
   Future<void> _likePost() async {
     await _firebasePostMethods.updateLikes(
       postId: widget.post.postId,
-      userId: user!.uid,
+      userId: widget.currentUser.uid,
     );
     setState(() => _likeAnimation = !_likeAnimation);
   }
 
   @override
   Widget build(BuildContext context) {
-    user = Provider.of<UserProvider>(context, listen: false).user!;
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -57,7 +54,7 @@ class _PostCardState extends State<PostCard> {
         ),
         _PostActions(
           post: widget.post,
-          user: user!,
+          user: widget.currentUser,
           likePost: _likePost,
         ),
         Padding(

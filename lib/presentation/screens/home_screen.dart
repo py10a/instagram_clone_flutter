@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone_flutter/presentation/widgets/widgets.dart';
 import 'package:instagram_clone_flutter/providers/post_provider.dart';
+import 'package:instagram_clone_flutter/providers/user_provider.dart';
 import 'package:instagram_clone_flutter/repository/models/models.dart'
     as models;
 import 'package:provider/provider.dart';
@@ -45,28 +46,34 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: StreamBuilder(
-        stream: Provider.of<PostProvider>(context).postsStream,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final postList = snapshot.data!.docs;
-          return RefreshIndicator(
-            displacement: 0,
-            strokeWidth: 2,
-            onRefresh: _onRefresh,
-            child: ListView.builder(
+      body: RefreshIndicator(
+        displacement: 0,
+        strokeWidth: 2,
+        onRefresh: _onRefresh,
+        child: StreamBuilder(
+          stream: Provider.of<PostProvider>(context).postsStream,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return const Center(child: Text('Something went wrong'));
+            }
+            final postList = snapshot.data!.docs;
+            return ListView.builder(
               itemCount: postList.length,
               itemBuilder: (context, index) {
                 final post = models.Post.fromJson(
                   postList[index].data() as Map<String, dynamic>,
                 );
-                return PostCard(post: post);
+                return PostCard(
+                  post: post,
+                  currentUser: Provider.of<UserProvider>(context).user!,
+                );
               },
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

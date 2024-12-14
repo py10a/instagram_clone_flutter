@@ -112,12 +112,96 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildProfile() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Hero(
+                  tag: user.uid,
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundImage: NetworkImage(user.imageUrl),
+                  ),
+                ),
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      _buildProfileStat('Posts', posts.length),
+                      _buildProfileStat('Followers', followers.length),
+                      _buildProfileStat('Following', following.length),
+                    ],
+                  ),
+                )
+              ],
+            ),
+            SizedBox(height: 16),
+            Text(
+              user.username,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            SizedBox(height: 8),
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Expanded(
+                  child: isCurrentUser
+                      ? ProfileEditButton(
+                          onPressed: tapEditButton,
+                          child: const Text('Edit Profile'),
+                        )
+                      : ProfileFollowButton(
+                          isFollowing: isFollowing,
+                          onPressed: tapFollowUnfollowButton,
+                          child: isFollowing
+                              ? const Text('Following')
+                              : const Text('Follow'),
+                        ),
+                ),
+              ],
+            ),
+            SizedBox(height: 32),
+            posts.isEmpty
+                ? const Center(child: Text('No posts yet'))
+                : GridView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: posts.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final post = posts[index];
+                      return GridTile(
+                        child: Image.network(
+                          post.postUrl,
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    },
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 4,
+                      mainAxisSpacing: 4,
+                    ),
+                  ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leadingWidth: 150,
         centerTitle: false,
         title: Text(
-          user.username,
+          'Profile',
           style: Theme.of(context)
               .textTheme
               .headlineSmall!
@@ -130,100 +214,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Hero(
-                    tag: user.uid,
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundImage: NetworkImage(user.imageUrl),
-                    ),
-                  ),
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        _buildProfileStat('Posts', posts.length),
-                        _buildProfileStat('Followers', followers.length),
-                        _buildProfileStat('Following', following.length),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-              SizedBox(height: 16),
-              Text(
-                user.username,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              SizedBox(height: 8),
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Expanded(
-                    child: isCurrentUser
-                        ? ProfileEditButton(
-                            onPressed: tapEditButton,
-                            child: const Text('Edit Profile'),
-                          )
-                        : ProfileFollowButton(
-                            isFollowing: isFollowing,
-                            onPressed: tapFollowUnfollowButton,
-                            child: isFollowing
-                                ? const Text('Following')
-                                : const Text('Follow'),
-                          ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 32),
-              posts.isEmpty
-                  ? const Center(child: Text('No posts yet'))
-                  : GridView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: posts.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final post = posts[index];
-                        return GridTile(
-                          child: Image.network(
-                            post.postUrl,
-                            fit: BoxFit.cover,
-                          ),
-                        );
-                      },
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        crossAxisSpacing: 4,
-                        mainAxisSpacing: 4,
-                      ),
-                    ),
-            ],
-          ),
-        ),
+      body: FutureBuilder(
+        future: _getUser(),
+        builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return _buildProfile();
+        },
       ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _getUser(),
-      builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        return _buildProfile();
-      },
     );
   }
 
