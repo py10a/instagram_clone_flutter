@@ -6,10 +6,7 @@ This project is your gateway to creating an Instagram-like app using Flutter.
 ### Installation
 _Before you dive in, make sure you have Flutter installed. If not, you can find the installation guide [here](https://flutter.dev/docs/get-started/install)._
 
-1. Clone the repo:
-   ```sh
-   git clone https://github.com/your-username/instagram_clone_flutter.git
-    ```
+1. Clone the repo to your local machine using Git.
 2. Navigate to the project directory:
 3. Run the app:
    ```sh
