@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 
 /// Pick an image from the gallery or camera
@@ -15,3 +16,5 @@ Future<Uint8List> pickImage(ImageSource source) async {
     throw Exception('No image selected');
   }
 }
+
+void imageToByte(ImageProvider image) async {}

@@ -9,6 +9,8 @@ import 'package:instagram_clone_flutter/responsive/responsive_layout_screen.dart
 import 'package:instagram_clone_flutter/utils/utils.dart';
 import 'package:provider/provider.dart';
 
+const String defaultAvatarAssetPath = 'assets/images/default_avatar.png';
+
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
@@ -40,24 +42,42 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   void signUp(context) async {
     setState(() => _isSigningUp = true);
-    FocusManager.instance.primaryFocus?.unfocus();
-    String response = await Provider.of<UserProvider>(context, listen: false)
-        .signUpWithEmailAndPassword(
-      username: _usernameController.text,
-      email: _emailController.text,
-      password: _passwordController.text,
-      avatarImage: _avatarImage,
-    );
-    if (response == 'success') {
-      Provider.of<UserProvider>(context, listen: false).refreshUser();
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) =>
-              ResponsiveLayoutScreen(child: const HomeScreen()),
-        ),
-      );
+
+    // Please fill in all fields
+    if (_usernameController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _passwordController.text.isEmpty) {
+      showSnackBar('Please fill in all fields', context: context);
+      setState(() => _isSigningUp = false);
+      return;
     }
-    setState(() => _isSigningUp = false);
+
+    try {
+      // Standard avatar image
+      _avatarImage ??=
+          (await rootBundle.load(defaultAvatarAssetPath)).buffer.asUint8List();
+
+      FocusManager.instance.primaryFocus?.unfocus();
+      String response = await Provider.of<UserProvider>(context, listen: false)
+          .signUpWithEmailAndPassword(
+        username: _usernameController.text,
+        email: _emailController.text,
+        password: _passwordController.text,
+        avatarImage: _avatarImage,
+      );
+      if (response == 'success') {
+        Provider.of<UserProvider>(context, listen: false).refreshUser();
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) =>
+                ResponsiveLayoutScreen(child: const HomeScreen()),
+          ),
+        );
+      }
+      setState(() => _isSigningUp = false);
+    } catch (e) {
+      print(e);
+    }
   }
 
   void logIn() {
@@ -88,16 +108,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
     Widget avatar = InkWell(
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
-      onTap: () async {
-        await selectImage();
-      },
+      onTap: () async => await selectImage(),
       child: Stack(
         children: [
           CircleAvatar(
             radius: 40,
-            foregroundImage: _avatarImage != null
-                ? MemoryImage(_avatarImage!)
-                : Image.asset('assets/images/default_avatar.png').image,
+            foregroundImage: _avatarImage == null
+                ? AssetImage(defaultAvatarAssetPath)
+                : MemoryImage(_avatarImage!),
             backgroundColor: Colors.transparent,
           ),
           Positioned(
