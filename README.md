@@ -1,16 +1,68 @@
-# instagram_clone_flutter
+# Instagram Clone Flutter
 
-A new Flutter project.
+Welcome to the **Instagram Clone Flutter** project! 🎉
+This project is your gateway to creating an Instagram-like app using Flutter.
 
-## Getting Started
+### Installation
+_Before you dive in, make sure you have Flutter installed. If not, you can find the installation guide [here](https://flutter.dev/docs/get-started/install)._
 
-This project is a starting point for a Flutter application.
+1. Clone the repo:
+   ```sh
+   git clone https://github.com/your-username/instagram_clone_flutter.git
+    ```
+2. Navigate to the project directory:
+3. Run the app:
+   ```sh
+   flutter run
+   ```
+4. Build the app:
+   ```sh
+    flutter build apk
+   //  or
+    flutter build ios
+    ```
+5. Enjoy your Instagram Clone Flutter app! 🚀
 
-A few resources to get you started if this is your first Flutter project:
+## Features
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Authentication
+- [x] Sign Up
+- [x] Log In
+- [x] Log Out
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![Home](assets/gifs/5.gif)
+
+### Profile
+- [x] View Profile
+- [x] Follow/Unfollow Users
+- [ ] Edit Profile
+
+![Home](assets/gifs/6.gif)
+
+### Home
+- [x] View Posts
+- [x] Like/Unlike Posts
+- [x] Comment on Posts
+
+![Home](assets/gifs/1.gif)
+
+### Search
+- [x] Search for Users
+
+![Home](assets/gifs/3.gif)
+
+### Reels
+- [x] View Reels
+
+![Home](assets/gifs/2.gif)
+
+## Contributing
+If you have any ideas on how to improve the app, feel free to contribute! To do so, follow these steps:
+
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Create a pull request to the `main` branch of the original project.
+
+## License
+Distributed under the MIT License. See `LICENSE` for more information.
