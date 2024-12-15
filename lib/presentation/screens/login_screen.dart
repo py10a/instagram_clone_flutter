@@ -78,29 +78,32 @@ class _LoginScreenState extends State<LoginScreen> {
       onPressed: signUp,
     );
 
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                logo,
-                const SizedBox(height: 64),
-                emailTextInput,
-                const SizedBox(height: 12),
-                passwordTextInput,
-                const SizedBox(height: 64),
-                loginButton,
-                const SizedBox(height: 8),
-                signUpButton,
-              ],
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  logo,
+                  const SizedBox(height: 64),
+                  emailTextInput,
+                  const SizedBox(height: 12),
+                  passwordTextInput,
+                  const SizedBox(height: 64),
+                  loginButton,
+                  const SizedBox(height: 8),
+                  signUpButton,
+                ],
+              ),
             ),
           ),
         ),

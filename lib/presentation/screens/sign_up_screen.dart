@@ -67,6 +67,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       );
       if (response == 'success') {
         Provider.of<UserProvider>(context, listen: false).refreshUser();
+        showSnackBar('Successfully signed up!', context: context);
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) =>
@@ -74,9 +75,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         );
       }
+      showSnackBar(response, context: context);
       setState(() => _isSigningUp = false);
     } catch (e) {
       print(e);
+      showSnackBar(e.toString(), context: context);
     }
   }
 
