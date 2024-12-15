@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:instagram_clone_flutter/repository/posts/firebase_post_methods.dart';
-
-final _firebasePostMethods = FirebasePostMethods.instance;
 
 class ProfileModal extends StatefulWidget {
   const ProfileModal({
